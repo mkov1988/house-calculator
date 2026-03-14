@@ -1,0 +1,2358 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mortgage vs. Invest Calculator — Compare 30-Year Wealth Outcomes</title>
+    <meta name="description"
+        content="Should you put a massive down payment on your house or invest the difference? Compare 30-year outcomes with this interactive calculator.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+    <style>
+        /* ═══════════════════════════════════════════════
+       RESET & BASE
+       ═══════════════════════════════════════════════ */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #f4f5f7;
+            --surface: #ffffff;
+            --border: #e2e5ea;
+            --text: #1a1d23;
+            --text-secondary: #5f6672;
+            --input-bg: #ffffff;
+            /* Default background for inputs */
+            --accent: #4f46e5;
+            --accent-light: #eef2ff;
+            --green: #10b981;
+            --green-bg: #ecfdf5;
+            --green-border: #a7f3d0;
+            --purple: #7c3aed;
+            --purple-bg: #f5f3ff;
+            --orange: #f59e0b;
+            --orange-bg: #fffbeb;
+            --winner-green: #059669;
+            --s1-color: #3b82f6;
+            --s2-color: #7c3aed;
+            --equity-color: #3b82f6;
+            --portfolio-color: #7c3aed;
+            --radius: 0.8rem;
+            --radius-sm: 0.5333rem;
+            --shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+            --shadow-md: 0 0.2667rem 0.8rem rgba(0, 0, 0, 0.07), 0 2px 0.2667rem rgba(0, 0, 0, 0.04);
+            /* ── Typography Scale Tokens ── */
+            --text-sm: clamp(0.875rem, 1vw, 0.9rem);
+            --text-base: clamp(1rem, 1.2vw, 1.05rem);
+            --text-md: clamp(1.125rem, 1.5vw, 1.25rem);
+            --text-lg: clamp(1.25rem, 2vw, 1.5rem);
+            --text-xl: clamp(1.5rem, 2.5vw, 2rem);
+            --text-2xl: clamp(2rem, 3.5vw, 2.75rem);
+        }
+
+        [data-theme="dark"] {
+            --bg: #111827;
+            --surface: #1f2937;
+            --surface-hover: #374151;
+            /* Lighter surface for panels/nested */
+            --border: #374151;
+            --text: #f9fafb;
+            --text-secondary: #9ca3af;
+            --accent: #6366f1;
+            --accent-light: #3730a3;
+            --green: #10b981;
+            --green-bg: #064e3b;
+            --green-border: #047857;
+            --orange: #f59e0b;
+            --orange-bg: #78350f;
+            --purple-bg: #1f2937;
+            --shadow: 0 1px 3px rgba(0, 0, 0, 0.6), 0 1px 2px rgba(0, 0, 0, 0.4);
+            --shadow-md: 0 0.2667rem 0.8rem rgba(0, 0, 0, 0.7), 0 2px 0.2667rem rgba(0, 0, 0, 0.4);
+            --input-bg: #111827;
+            /* Dark background for input fields */
+            --s1-footer-bg: #1e293b;
+            --s2-footer-bg: #2e1065;
+            --footer-title-color: #94a3b8;
+            --footer-negative-val: var(--text-secondary);
+            --leader-line-color: rgba(255, 255, 255, 0.4);
+            --leader-text-color: #ffffff;
+            --s1-text-color: #ffffff;
+            --s2-text-color: #ffffff;
+        }
+
+        [data-theme="dark"] .cashflow-card .cf-header {
+            background: var(--surface-hover);
+        }
+
+        [data-theme="dark"] .how-it-works {
+            background: var(--bg);
+        }
+
+        [data-theme="dark"] .tab-btn {
+            background: #374151;
+            color: #d1d5db;
+        }
+
+        [data-theme="dark"] .tab-btn.active {
+            background: #1f2937;
+            color: #f9fafb;
+            box-shadow: inset 0 -2px 0 var(--accent);
+        }
+
+        [data-theme="dark"] input[type="range"] {
+            background: #4b5563;
+        }
+
+        [data-theme="dark"] .data-table thead th {
+            background: #374151;
+            border-bottom-color: #4b5563;
+            color: #d1d5db;
+        }
+
+        [data-theme="dark"] .data-table tbody td {
+            border-bottom-color: var(--border);
+        }
+
+        [data-theme="dark"] .data-table tbody tr:hover {
+            background: var(--surface-hover);
+        }
+
+        [data-theme="dark"] .data-table tbody tr.highlight {
+            background: #064e3b;
+        }
+
+        [data-theme="dark"] .tax-drag-box {
+            border-color: #b45309;
+        }
+
+        [data-theme="dark"] .chart-note.important {
+            border-color: #b45309;
+            color: #fcd34d;
+        }
+
+        html {
+            font-size: 1rem;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ═══════════════════════════════════════════════
+       GLOBAL APP BAR
+       ═══════════════════════════════════════════════ */
+        .app-bar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            width: 100%;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        }
+
+        [data-theme="dark"] .app-bar {
+            background: #1a2234;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .app-bar-inner {
+            width: 95vw;
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 1.5rem 1.6rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .app-bar-brand {
+            display: flex;
+            align-items: baseline;
+            gap: 0.75rem;
+        }
+
+        .app-bar-brand h1 {
+            font-size: 1.35rem;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            line-height: 1.2;
+            white-space: nowrap;
+        }
+
+        .app-bar-divider {
+            width: 1px;
+            height: 1.1rem;
+            background: var(--border);
+            flex-shrink: 0;
+            align-self: center;
+        }
+
+        .app-bar-brand p {
+            color: var(--text-secondary);
+            font-size: var(--text-sm);
+            font-weight: 400;
+            line-height: 1.2;
+            white-space: nowrap;
+        }
+
+        .app-bar-utils {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        /* ═══════════════════════════════════════════════
+       LAYOUT
+       ═══════════════════════════════════════════════ */
+        .app-container {
+            width: 95vw;
+            max-width: 1600px;
+            margin: 0 auto;
+            min-height: 100vh;
+            padding: 2.5rem 1.6rem 4rem;
+            display: grid;
+            grid-template-columns: clamp(300px, 25vw, 400px) 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        .app-container>* {
+            min-width: 0;
+        }
+
+        /* ═══════════════════════════════════════════════
+       CARDS
+       ═══════════════════════════════════════════════ */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.6rem;
+            box-shadow: var(--shadow);
+        }
+
+        /* ═══════════════════════════════════════════════
+       LEFT PANEL — INPUTS
+       ═══════════════════════════════════════════════ */
+        .inputs-panel {
+            position: sticky;
+            top: 1.3333rem;
+        }
+
+        .inputs-panel .panel-title {
+            font-size: var(--text-lg);
+            font-weight: 700;
+            margin-bottom: 2px;
+            display: flex;
+            align-items: center;
+            gap: 0.5333rem;
+        }
+
+        .inputs-panel .panel-subtitle {
+            color: var(--text-secondary);
+            font-size: var(--text-sm);
+            margin-bottom: 1.3333rem;
+        }
+
+        /* Input group */
+        .input-group {
+            margin-bottom: 1.3333rem;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: var(--text-base);
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 0.4rem;
+        }
+
+        .input-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5333rem;
+        }
+
+        .input-row .unit {
+            font-size: var(--text-base);
+            color: var(--text-secondary);
+            font-weight: 500;
+            flex-shrink: 0;
+        }
+
+        .input-row input[type="number"] {
+            width: 7rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 0.65rem 0.75rem;
+            font-family: inherit;
+            font-size: var(--text-md);
+            font-weight: 400;
+            text-align: right;
+            color: var(--text);
+            background-color: var(--input-bg);
+            outline: none;
+            min-height: 44px;
+            transition: border-color 0.15s;
+        }
+
+        .input-row input[type="number"]:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        /* Hide number spinners */
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+
+        /* Sliders */
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 0.4rem;
+            border-radius: 3px;
+            background: #e2e5ea;
+            outline: none;
+            margin-top: 0.75rem;
+            margin-bottom: 0.25rem;
+            cursor: pointer;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 1.2rem;
+            width: 1.2rem;
+            border-radius: 50%;
+            background: var(--accent);
+            cursor: pointer;
+            border: 3px solid white;
+            box-shadow: 0 1px 0.2667rem rgba(0, 0, 0, 0.2);
+            transition: transform 0.1s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.15);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            height: 0.9333rem;
+            width: 0.9333rem;
+            border-radius: 50%;
+            background: var(--accent);
+            cursor: pointer;
+            border: 3px solid white;
+            box-shadow: 0 1px 0.2667rem rgba(0, 0, 0, 0.2);
+        }
+
+        .scenario-box.s2 input[type="range"]::-webkit-slider-thumb {
+            background: var(--s2-color);
+        }
+
+        .scenario-box.s2 input[type="range"]::-moz-range-thumb {
+            background: var(--s2-color);
+        }
+
+        /* Scenario boxes */
+        .scenario-box {
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 1.25rem;
+            margin-bottom: 1.3333rem;
+        }
+
+        .scenario-box.s1 {
+            border-color: var(--s1-color);
+            background: rgba(59, 130, 246, 0.03);
+        }
+
+        .scenario-box.s2 {
+            border-color: var(--s2-color);
+            background: var(--purple-bg);
+        }
+
+        .scenario-box .scenario-label {
+            font-size: var(--text-base);
+            font-weight: 700;
+            margin-bottom: 0.4rem;
+        }
+
+        .scenario-box.s1 .scenario-label {
+            color: var(--s1-color);
+        }
+
+        .scenario-box.s2 .scenario-label {
+            color: var(--s2-color);
+        }
+
+        .scenario-box .input-row {
+            margin-top: 0.2667rem;
+        }
+
+        .scenario-box input[type="range"] {
+            margin-top: 0.4rem;
+        }
+
+        .scenario-box .pct-note {
+            font-size: var(--text-sm);
+            color: var(--text-secondary);
+            margin-top: 0.4rem;
+        }
+
+        /* Advanced Settings Accordion */
+        .advanced-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.8rem 0;
+            border-top: 1px solid var(--border);
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .advanced-toggle span {
+            font-size: var(--text-base);
+            font-weight: 600;
+        }
+
+        .advanced-toggle .chevron {
+            transition: transform 0.25s ease;
+            font-size: var(--text-sm);
+            color: var(--text-secondary);
+        }
+
+        .advanced-toggle.open .chevron {
+            transform: rotate(180deg);
+        }
+
+        .advanced-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.35s ease;
+        }
+
+        .advanced-body.open {
+            max-height: 40rem;
+        }
+
+        .advanced-body .input-group:first-child {
+            margin-top: 0.5333rem;
+        }
+
+        /* Tax drag info box */
+        .tax-drag-box {
+            background: var(--orange-bg);
+            border: 1px solid #fde68a;
+            border-radius: var(--radius-sm);
+            padding: 0.8rem 0.9333rem;
+            margin-top: 1.0667rem;
+        }
+
+        .tax-drag-box .tax-title {
+            font-size: var(--text-sm);
+            font-weight: 700;
+            color: #b45309;
+            margin-bottom: 2px;
+        }
+
+        .tax-drag-box .tax-detail {
+            font-size: var(--text-sm);
+            color: #92400e;
+            line-height: 1.45;
+        }
+
+        /* ═══════════════════════════════════════════════
+       RIGHT PANEL — OUTPUTS
+       ═══════════════════════════════════════════════ */
+        .output-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 1.6rem;
+        }
+
+        /* Bottom Line Section */
+        .bottom-line-title {
+            font-size: var(--text-lg);
+            font-weight: 700;
+            margin-bottom: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5333rem;
+        }
+
+        .scenarios-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-start;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 0;
+            margin-bottom: 0;
+        }
+
+        /* Results Container — Unified mega-card */
+        .results-container {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 2rem;
+            box-shadow: var(--shadow-md);
+        }
+
+        .results-container .bottom-line-title {
+            margin-bottom: 1.5rem;
+        }
+
+        .scenarios-row>* {
+            min-width: 0;
+        }
+
+        .scenario-result {
+            flex: 1 1 min(100%, 400px);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: visible;
+            background: var(--surface);
+        }
+
+        #s1Result {
+            border-color: var(--s1-color);
+        }
+
+        #s2Result {
+            border-color: var(--s2-color);
+        }
+
+        .scenario-result.pro-tier {
+            flex-grow: 1.05;
+        }
+
+        #s1Result.pro-tier {
+            box-shadow: 0 12px 24px -4px rgba(59, 130, 246, 0.25), 0 4px 10px -2px rgba(59, 130, 246, 0.15);
+        }
+
+        #s2Result.pro-tier {
+            box-shadow: 0 12px 24px -4px rgba(124, 58, 237, 0.25), 0 4px 10px -2px rgba(124, 58, 237, 0.15);
+        }
+
+        /* Result Body ensuring alignment */
+        .result-body {
+            padding: 1.2rem 1.2rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        .scenario-result.pro-tier .result-body {
+            padding: 2.0rem 1.4rem;
+            /* Top/bottom padding increased by 0.8rem to vertically expand without scaling */
+        }
+
+        /* Footers (Fixed Height) */
+        .result-footer {
+            padding: 1.25rem 1.0667rem;
+            text-align: center;
+            height: auto;
+            min-height: 6rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 0.35rem;
+            border-bottom-left-radius: calc(var(--radius-sm) - 2px);
+            border-bottom-right-radius: calc(var(--radius-sm) - 2px);
+        }
+
+        .footer-baseline .footer-title {
+            font-size: var(--text-sm);
+            font-weight: 700;
+            margin: 0;
+            letter-spacing: 0.5px;
+        }
+
+        .footer-baseline .footer-value {
+            font-size: var(--text-xl);
+            font-weight: 800;
+            margin: 0;
+            letter-spacing: -1px;
+        }
+
+        .footer-baseline .footer-sub {
+            font-size: var(--text-sm);
+            color: var(--text-secondary);
+        }
+
+        #s1Result .footer-baseline {
+            background: var(--s1-footer-bg, #f1f5f9);
+            border-top: 1px solid rgba(59, 130, 246, 0.1);
+        }
+
+        #s1Result .footer-baseline .footer-title {
+            color: var(--footer-title-color, #475569);
+        }
+
+        #s1Result .footer-baseline .footer-value {
+            color: var(--footer-negative-val, var(--s1-color));
+        }
+
+        #s2Result .footer-baseline {
+            background: var(--s2-footer-bg, #f5f3ff);
+            border-top: 1px solid rgba(124, 58, 237, 0.1);
+        }
+
+        #s2Result .footer-baseline .footer-title {
+            color: var(--footer-title-color, #6d28d9);
+        }
+
+        #s2Result .footer-baseline .footer-value {
+            color: var(--footer-negative-val, var(--s2-color));
+        }
+
+        .footer-hero {
+            color: white;
+        }
+
+        .footer-hero .footer-title {
+            font-size: var(--text-sm);
+            font-weight: 700;
+            margin: 0;
+            letter-spacing: 0.5px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .footer-hero .footer-value {
+            font-size: var(--text-xl);
+            font-weight: 800;
+            margin: 0;
+            letter-spacing: -1px;
+        }
+
+        .footer-hero .footer-sub {
+            font-size: var(--text-sm);
+            color: rgba(255, 255, 255, 0.85);
+            margin: 0;
+        }
+
+        #s1Result .footer-hero {
+            background: var(--s1-color);
+            border-top: 1px solid rgba(59, 130, 246, 0.5);
+        }
+
+        #s2Result .footer-hero {
+            background: var(--s2-color);
+            border-top: 1px solid rgba(124, 58, 237, 0.5);
+        }
+
+        .winner-badge {
+            position: absolute;
+            color: white;
+            font-size: var(--text-sm);
+            font-weight: 700;
+            padding: 0.25rem 0.6rem;
+            border-radius: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            z-index: 2;
+            left: auto;
+            right: 20px;
+            top: 0;
+            transform: translateY(-50%);
+        }
+
+        #s1Result .winner-badge {
+            background: var(--s1-color);
+        }
+
+        #s2Result .winner-badge {
+            background: var(--s2-color);
+        }
+
+        .scenario-result .result-label {
+            font-size: var(--text-sm);
+            color: var(--text-secondary);
+            font-weight: 600;
+            margin-bottom: 0.2667rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .scenario-result .result-value {
+            font-size: var(--text-2xl);
+            font-weight: 800;
+            letter-spacing: -1px;
+            line-height: 1.2;
+        }
+
+        .scenario-result .result-breakdown {
+            font-size: var(--text-base);
+            color: var(--leader-text-color, var(--text-secondary));
+            margin-top: 0.8rem;
+            line-height: 1.5;
+        }
+
+        .leader-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 0.4rem;
+        }
+
+        .leader-line {
+            flex-grow: 1;
+            border-bottom: 2px dotted var(--leader-line-color, var(--border));
+            margin: 0 0.5333rem;
+            position: relative;
+            top: -3px;
+            opacity: 0.6;
+        }
+
+        .leader-val {
+            min-width: 5.5rem;
+            text-align: right;
+            display: inline-block;
+        }
+
+        .s1-text {
+            color: var(--s1-text-color, var(--s1-color));
+            font-weight: 700;
+        }
+
+        .s2-text {
+            color: var(--s2-text-color, var(--s2-color));
+            font-weight: 700;
+        }
+
+        .winner-badge {
+            position: absolute;
+            top: 0;
+            right: 24px;
+            transform: translateY(-50%);
+            background: var(--winner-green);
+            color: white;
+            font-size: 0.875rem;
+            font-weight: 700;
+            padding: 4px 16px;
+            border-radius: 1.3333rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 0.2667rem;
+            white-space: nowrap;
+        }
+
+        /* Wealth Advantage Banner Deleted */
+
+        /* ═══════════════════════════════════════════════
+       MONTHLY CASH FLOW
+       ═══════════════════════════════════════════════ */
+        .cashflow-title {
+            font-size: var(--text-lg);
+            font-weight: 700;
+            margin-bottom: 0.2667rem;
+        }
+
+        .cashflow-subtitle {
+            font-size: var(--text-sm);
+            color: var(--text-secondary);
+            margin-bottom: 1.0667rem;
+        }
+
+        .cashflow-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.0667rem;
+        }
+
+        .cashflow-card {
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+        }
+
+        .cashflow-card .cf-header {
+            font-size: var(--text-base);
+            font-weight: 700;
+            padding: 0.6667rem 1.0667rem;
+            background: #f8f9fa;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .cashflow-card.s1 .cf-header {
+            background: var(--s1-color);
+            color: white;
+            border-bottom: none;
+        }
+
+        .cashflow-card.s2 .cf-header {
+            background: var(--s2-color);
+            color: white;
+            border-bottom: none;
+        }
+
+        .cf-rows {
+            padding: 0.5333rem 1.0667rem;
+        }
+
+        .cf-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.4rem 0;
+            font-size: var(--text-base);
+            line-height: 1.5;
+        }
+
+        .cf-leader {
+            flex: 1;
+            border-bottom: 2px dotted var(--leader-line-color, var(--border));
+            margin: 0 12px;
+            position: relative;
+            top: -2px;
+            opacity: 0.5;
+        }
+
+        .cf-row .cf-label {
+            color: var(--text-secondary);
+        }
+
+        .cf-row .cf-val {
+            font-weight: 600;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .cf-row.subtotal {
+            border-top: 1px solid var(--border);
+            margin-top: 0.2667rem;
+            padding-top: 0.5333rem;
+        }
+
+        .cf-row.investment .cf-label {
+            font-weight: 500;
+        }
+
+        .cf-row.investment .cf-val.s1-val {
+            color: var(--s1-color);
+        }
+
+        .cf-row.investment .cf-val.s2-val {
+            color: var(--s2-color);
+        }
+
+        .cf-row.total {
+            border-top: 1.5px solid var(--text);
+            margin-top: 0.2667rem;
+            padding-top: 0.5333rem;
+            font-weight: 700;
+        }
+
+        .cf-row.total .cf-label {
+            font-weight: 700;
+        }
+
+        /* How it works box */
+        .how-it-works {
+            background: #f8f9fb;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 0.9333rem 1.0667rem;
+            margin-top: 1.0667rem;
+        }
+
+        .how-it-works .hiw-title {
+            font-size: var(--text-base);
+            font-weight: 700;
+            margin-bottom: 0.2667rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .how-it-works .hiw-body {
+            font-size: var(--text-base);
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .how-it-works .hiw-body strong {
+            color: var(--text);
+        }
+
+        /* ═══════════════════════════════════════════════
+       TABS: Charts / Year-by-Year
+       ═══════════════════════════════════════════════ */
+        .tabs {
+            display: flex;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            margin-bottom: 1.3333rem;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 0.6667rem;
+            text-align: center;
+            font-family: inherit;
+            font-size: var(--text-sm);
+            font-weight: 600;
+            border: none;
+            background: #f8f9fa;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            background: white;
+            color: var(--text);
+            box-shadow: inset 0 -2px 0 var(--accent);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* ═══════════════════════════════════════════════
+       CHARTS
+       ═══════════════════════════════════════════════ */
+        .chart-section {
+            margin-bottom: 1.6rem;
+        }
+
+        .chart-section h3 {
+            font-size: var(--text-lg);
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .chart-section .chart-sub {
+            font-size: var(--text-sm);
+            color: var(--text-secondary);
+            margin-bottom: 0.9333rem;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 21.3333rem;
+        }
+
+        .chart-note {
+            margin-top: 0.9333rem;
+            padding: 0.8rem 0.9333rem;
+            font-size: var(--text-sm);
+            line-height: 1.5;
+            border-radius: var(--radius-sm);
+        }
+
+        .chart-note strong {
+            color: var(--text);
+        }
+
+        .chart-note.important {
+            background: var(--orange-bg);
+            border: 1px solid #fde68a;
+            color: #92400e;
+        }
+
+        /* ═══════════════════════════════════════════════
+       DATA TABLE
+       ═══════════════════════════════════════════════ */
+        .data-table-wrap {
+            overflow-x: auto;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: var(--text-sm);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .data-table thead th {
+            text-align: right;
+            padding: 0.6667rem 0.8rem;
+            font-weight: 600;
+            font-size: var(--text-sm);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+            background: #f8f9fa;
+            border-bottom: 2px solid var(--border);
+            white-space: nowrap;
+        }
+
+        .data-table thead th:first-child {
+            text-align: center;
+        }
+
+        .data-table tbody td {
+            text-align: right;
+            padding: 0.5333rem 0.8rem;
+            border-bottom: 1px solid #f0f1f3;
+        }
+
+        .data-table tbody td:first-child {
+            text-align: center;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .data-table tbody tr:hover {
+            background: #f8f9fb;
+        }
+
+        .data-table tbody tr.highlight {
+            background: var(--green-bg);
+            font-weight: 600;
+        }
+
+        .data-table .positive {
+            color: var(--winner-green);
+        }
+
+        .data-table .negative {
+            color: #dc2626;
+        }
+
+        /* ═══════════════════════════════════════════════
+       FOOTER
+       ═══════════════════════════════════════════════ */
+        .footer {
+            text-align: center;
+            padding: 2rem 1.6rem;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            border-top: 1px solid var(--border);
+            max-width: 85.3333rem;
+            margin: 0 auto;
+        }
+
+        /* ═══════════════════════════════════════════════
+       RESPONSIVE
+       ═══════════════════════════════════════════════ */
+        @media (max-width: 60rem) {
+            .inputs-panel {
+                position: static;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .scenarios-row {
+                grid-template-columns: 1fr;
+            }
+
+            .cashflow-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .wealth-banner .banner-value {
+                font-size: 1.8rem;
+            }
+        }
+
+        /* Animated value flash */
+        .flash {
+            animation: flashAnim 0.35s ease;
+        }
+
+        @keyframes flashAnim {
+            0% {
+                color: var(--accent);
+            }
+
+            100% {
+                color: inherit;
+            }
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            width: 2.25rem;
+            height: 2.25rem;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow);
+            transition: all 0.2s;
+            color: var(--text);
+        }
+
+        [data-theme="dark"] .theme-toggle {
+            background: #111827;
+        }
+
+        .theme-toggle:hover {
+            box-shadow: var(--shadow-md);
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 60rem) {
+            .theme-toggle {
+                top: 1.0667rem;
+                right: 1.0667rem;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .app-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ═══════════════════════════════════════════════
+       TOOLTIPS
+       ═══════════════════════════════════════════════ */
+        .tooltip-wrap {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            margin-left: 5px;
+            vertical-align: middle;
+        }
+
+        .tooltip-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 1.5px solid #93a3c0;
+            background: #fff;
+            color: #93a3c0;
+            font-size: 10px;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: help;
+            transition: border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+            line-height: 1;
+            flex-shrink: 0;
+            user-select: none;
+        }
+
+        .tooltip-icon:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        [data-theme="dark"] .tooltip-icon {
+            background: var(--surface);
+            border-color: #6b7280;
+            color: #9ca3af;
+        }
+
+        [data-theme="dark"] .tooltip-icon:hover {
+            border-color: #818cf8;
+            color: #818cf8;
+            box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.15);
+        }
+
+        .tooltip-text {
+            visibility: hidden;
+            opacity: 0;
+            position: absolute;
+            bottom: calc(100% + 8px);
+            left: 50%;
+            transform: translateX(-50%) translateY(4px);
+            background: var(--surface);
+            color: var(--text);
+            font-size: var(--text-sm);
+            font-weight: 500;
+            line-height: 1.5;
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1), 0 1px 4px rgba(0, 0, 0, 0.06);
+            width: max-content;
+            max-width: 260px;
+            z-index: 100;
+            pointer-events: none;
+            transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+        }
+
+        .tooltip-text::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 5px;
+            border-style: solid;
+            border-color: var(--surface) transparent transparent transparent;
+        }
+
+        .tooltip-text::before {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 6px;
+            border-style: solid;
+            border-color: var(--border) transparent transparent transparent;
+        }
+
+        [data-theme="dark"] .tooltip-text {
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4), 0 1px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .tooltip-wrap:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Edge-aware: tooltips near left/right edges */
+        .tooltip-wrap.tip-right .tooltip-text {
+            left: auto;
+            right: -8px;
+            transform: translateX(0) translateY(4px);
+        }
+
+        .tooltip-wrap.tip-right:hover .tooltip-text {
+            transform: translateX(0) translateY(0);
+        }
+
+        .tooltip-wrap.tip-right .tooltip-text::after,
+        .tooltip-wrap.tip-right .tooltip-text::before {
+            left: auto;
+            right: 12px;
+            transform: none;
+        }
+
+        /* In-label alignment */
+        .input-group label .tooltip-wrap {
+            margin-left: 4px;
+        }
+
+        /* Cash flow tooltip alignment */
+        .cf-row .tooltip-wrap {
+            margin-left: 3px;
+        }
+
+        .cf-row .tooltip-wrap .tooltip-text {
+            max-width: 220px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ═══════════════ APP BAR ═══════════════ -->
+    <header class="app-bar">
+        <div class="app-bar-inner">
+            <div class="app-bar-brand">
+                <h1>Mortgage vs. Invest</h1>
+                <span class="app-bar-divider"></span>
+                <p>Where should the money go?</p>
+            </div>
+            <div class="app-bar-utils">
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle Dark Mode">🌙</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- ═══════════════ MAIN LAYOUT ═══════════════ -->
+    <div class="app-container">
+
+        <!-- ─── LEFT: INPUTS ─── -->
+        <aside class="inputs-panel card" id="inputs-panel">
+            <div class="panel-title">🏠 Your Inputs</div>
+            <div class="panel-subtitle">Your home and your cash — we'll do the math</div>
+
+            <!-- Home Price -->
+            <div class="input-group">
+                <label for="homePrice">Home Price<span class="tooltip-wrap"><span class="tooltip-icon">?</span><span
+                            class="tooltip-text">The total purchase price of the home you're
+                            buying.</span></span></label>
+                <div class="input-row">
+                    <span class="unit">$</span>
+                    <input type="number" id="homePrice" value="750000" step="10000" min="100000" max="3000000">
+                </div>
+                <input type="range" id="homePriceSlider" min="100000" max="3000000" step="10000" value="750000">
+            </div>
+
+            <!-- Total Available Cash -->
+            <div class="input-group">
+                <label for="totalCash" style="color: var(--text); font-weight: 600;">Total Available Cash<span
+                        class="tooltip-wrap"><span class="tooltip-icon">?</span><span class="tooltip-text">The total
+                            amount of cash you have on hand to split between a down payment and
+                            investing.</span></span></label>
+                <div class="input-row">
+                    <span class="unit">$</span>
+                    <input type="number" id="totalCash" value="550000" step="10000" min="0" max="3000000">
+                </div>
+                <input type="range" id="totalCashSlider" min="0" max="3000000" step="10000" value="550000">
+            </div>
+
+            <!-- Scenario 1 -->
+            <div class="scenario-box s1">
+                <div class="scenario-label" style="margin-bottom: 0.8rem;">Scenario 1: Max Down Payment</div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+                    <span style="font-size: 1rem; font-weight: 600; color: var(--s1-color);">Down payment</span>
+                    <span id="s1DownDisplay"
+                        style="font-size: 1.5rem; font-weight: 800; color: var(--s1-color); letter-spacing: -0.5px;">$550,000</span>
+                </div>
+                <!-- hidden input to retain JS variable logic -->
+                <input type="hidden" id="s1Down" value="550000">
+                <div class="pct-note" id="s1PctNote">73.3% down — all cash goes to the house</div>
+            </div>
+
+            <!-- Scenario 2 -->
+            <div class="scenario-box s2">
+                <div class="scenario-label">Scenario 2: Invest the Difference</div>
+
+                <div style="display: flex; justify-content: space-between; margin-top: 12px; margin-bottom: 12px;">
+                    <div>
+                        <div
+                            style="font-size: 0.875rem; color: var(--text-secondary); font-weight: 600; margin-bottom: 4px;">
+                            Down payment</div>
+                        <div id="s2DownDisplay" style="font-size: 1.5rem; font-weight: 800; color: var(--s2-color);">
+                            $150,000</div>
+                        <input type="hidden" id="s2Down" value="150000">
+                    </div>
+                    <div style="text-align: right;">
+                        <div
+                            style="font-size: 0.875rem; color: var(--text-secondary); font-weight: 600; margin-bottom: 4px;">
+                            Invest the Rest</div>
+                        <div id="s2InvestDisplay" style="font-size: 1.5rem; font-weight: 800; color: var(--s2-color);">
+                            $400,000</div>
+                        <input type="hidden" id="s2Invest" value="400000">
+                    </div>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 8px; margin-top: 8px; margin-bottom: 4px;">
+                    <span style="font-size: 1.1rem;">🏠</span>
+                    <input type="range" id="s2DownSlider" min="0" max="550000" step="1000" value="150000"
+                        style="flex: 1; margin: 0;">
+                    <span style="font-size: 1.1rem;">📈</span>
+                </div>
+            </div>
+
+            <!-- Mortgage Rate -->
+            <div class="input-group">
+                <label for="mortgageRate">Mortgage Interest Rate<span class="tooltip-wrap"><span
+                            class="tooltip-icon">?</span><span class="tooltip-text">The annual interest rate on your
+                            mortgage loan. This is the cost of borrowing money to buy your home.</span></span></label>
+                <div class="input-row">
+                    <input type="number" id="mortgageRate" value="8" step="0.01" min="0" max="12">
+                    <span class="unit">%</span>
+                </div>
+                <input type="range" id="mortgageRateSlider" min="0" max="12" step="0.01" value="8">
+            </div>
+
+            <!-- Expected Market Return -->
+            <div class="input-group">
+                <label for="grossReturn">Expected Market Return (Gross)<span class="tooltip-wrap"><span
+                            class="tooltip-icon">?</span><span class="tooltip-text">The average annual return you expect
+                            from stock market investments before taxes. S&P 500 has historically averaged
+                            ~10%/year.</span></span></label>
+                <div class="input-row">
+                    <input type="number" id="grossReturn" value="10" step="0.1" min="0" max="20">
+                    <span class="unit">%</span>
+                </div>
+                <input type="range" id="grossReturnSlider" min="0" max="20" step="0.1" value="10">
+                <div class="pct-note" id="netReturnNote">Net Return (after dividend taxes): 9.55%</div>
+            </div>
+
+            <!-- Advanced Settings -->
+            <div class="advanced-toggle" id="advancedToggle" onclick="toggleAdvanced()">
+                <span>Advanced Settings</span>
+                <span class="chevron">▼</span>
+            </div>
+            <div class="advanced-body" id="advancedBody">
+                <!-- Loan Term -->
+                <div class="input-group">
+                    <label for="loanTerm">Loan Term<span class="tooltip-wrap"><span class="tooltip-icon">?</span><span
+                                class="tooltip-text">How many years you'll take to pay off the mortgage. 30 years is the
+                                most common. A shorter term means higher payments but less total
+                                interest.</span></span></label>
+                    <div class="input-row">
+                        <input type="number" id="loanTerm" value="30" step="1" min="5" max="30">
+                        <span class="unit">years</span>
+                    </div>
+                    <input type="range" id="loanTermSlider" min="5" max="30" step="1" value="30">
+                </div>
+                <!-- Property Tax Rate -->
+                <div class="input-group">
+                    <label for="propTax">Property Tax Rate<span class="tooltip-wrap"><span
+                                class="tooltip-icon">?</span><span class="tooltip-text">Annual property tax as a
+                                percentage of your home's value. Varies by location — U.S. average is about
+                                1.1%.</span></span></label>
+                    <div class="input-row">
+                        <input type="number" id="propTax" value="1.2" step="0.05" min="0" max="4">
+                        <span class="unit">%</span>
+                    </div>
+                    <input type="range" id="propTaxSlider" min="0" max="4" step="0.05" value="1.2">
+                </div>
+                <!-- Annual Insurance -->
+                <div class="input-group">
+                    <label for="insurance">Annual Insurance<span class="tooltip-wrap"><span
+                                class="tooltip-icon">?</span><span class="tooltip-text">Yearly cost of homeowner's
+                                insurance to protect against damage, theft, and liability.</span></span></label>
+                    <div class="input-row">
+                        <span class="unit">$</span>
+                        <input type="number" id="insurance" value="1200" step="100" min="0" max="25000">
+                    </div>
+                    <input type="range" id="insuranceSlider" min="0" max="25000" step="100" value="1200">
+                </div>
+                <!-- Maintenance -->
+                <div class="input-group">
+                    <label for="maintenance">Annual Maintenance<span class="tooltip-wrap"><span
+                                class="tooltip-icon">?</span><span class="tooltip-text">Estimated yearly upkeep costs
+                                (repairs, landscaping, appliances) as a percentage of home value. Rule of thumb is 1%
+                                per year.</span></span></label>
+                    <div class="input-row">
+                        <input type="number" id="maintenance" value="1" step="0.1" min="0" max="5">
+                        <span class="unit">%</span>
+                    </div>
+                    <input type="range" id="maintenanceSlider" min="0" max="5" step="0.1" value="1">
+                </div>
+                <!-- Dividend Yield -->
+                <div class="input-group">
+                    <label for="divYield">Dividend Yield<span class="tooltip-wrap"><span
+                                class="tooltip-icon">?</span><span class="tooltip-text">The percentage of your
+                                investment paid out as dividends each year. Dividends are taxed, reducing your effective
+                                return.</span></span></label>
+                    <div class="input-row">
+                        <input type="number" id="divYield" value="1.8" step="0.1" min="0" max="5">
+                        <span class="unit">%</span>
+                    </div>
+                    <input type="range" id="divYieldSlider" min="0" max="5" step="0.1" value="1.8">
+                </div>
+                <!-- Dividend Tax Rate -->
+                <div class="input-group">
+                    <label for="divTax">Dividend Tax Rate<span class="tooltip-wrap"><span
+                                class="tooltip-icon">?</span><span class="tooltip-text">The tax rate applied to your
+                                dividend income. Qualified dividends are typically taxed at 15% for most people, but can
+                                be up to 23.8%.</span></span></label>
+                    <div class="input-row">
+                        <input type="number" id="divTax" value="25" step="1" min="0" max="50">
+                        <span class="unit">%</span>
+                    </div>
+                    <input type="range" id="divTaxSlider" min="0" max="50" step="1" value="25">
+                </div>
+
+                <!-- Tax Drag Info -->
+                <div class="tax-drag-box" id="taxDragBox">
+                    <div class="tax-title">Tax Drag Applied</div>
+                    <div class="tax-detail" id="taxDragDetail">
+                        Net Return: 9.55%<br>
+                        (10.00% gross − 0.45% tax)
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ─── RIGHT: OUTPUTS ─── -->
+        <main class="output-panel">
+
+            <!-- Bottom Line (Year 30) -->
+            <section class="results-container">
+                <div class="bottom-line-title" id="bottomLineTitle">The Bottom Line (Year
+                    30)<span class="tooltip-wrap"><span class="tooltip-icon">?</span><span class="tooltip-text">Your
+                            total
+                            net wealth after 30 years — home equity plus investment portfolio value.</span></span>
+                </div>
+                <div class="scenarios-row">
+                    <div class="scenario-result baseline" id="s1Result">
+                        <div class="result-body">
+                            <div class="result-label"
+                                style="color: var(--s1-text-color, var(--s1-color)); text-transform: uppercase; font-weight: 800;">
+                                SCENARIO 1:
+                                NET WEALTH</div>
+                            <div class="result-value" id="s1Wealth">$5,944,580</div>
+                            <div class="result-breakdown" id="s1Breakdown">
+                                <div class="leader-row">
+                                    <span>Home equity<span class="tooltip-wrap"><span class="tooltip-icon">?</span><span
+                                                class="tooltip-text">The portion of your home's value that you own
+                                                outright
+                                                — home value minus remaining mortgage balance.</span></span></span>
+                                    <span class="leader-line"></span>
+                                    <span id="s1EquityLabel" class="leader-val">$750,000</span>
+                                </div>
+                                <div class="leader-row">
+                                    <span>Invested (liquid)<span class="tooltip-wrap"><span
+                                                class="tooltip-icon">?</span><span class="tooltip-text">The value of
+                                                your
+                                                investment portfolio — money you can access without selling your
+                                                home.</span></span></span>
+                                    <span class="leader-line"></span>
+                                    <span id="s1VtsaxLabel" class="s1-text leader-val">$5,194,580</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="scenario-result pro-tier winner" id="s2Result">
+                        <div class="result-body">
+                            <div class="result-label"
+                                style="color: var(--s2-text-color, var(--s2-color)); text-transform: uppercase; font-weight: 800;">
+                                SCENARIO 2:
+                                NET WEALTH</div>
+                            <div class="result-value" id="s2Wealth">$7,690,467</div>
+                            <div class="result-breakdown" id="s2Breakdown">
+                                <div class="leader-row">
+                                    <span>Home equity<span class="tooltip-wrap"><span class="tooltip-icon">?</span><span
+                                                class="tooltip-text">The portion of your home's value that you own
+                                                outright
+                                                — home value minus remaining mortgage balance.</span></span></span>
+                                    <span class="leader-line"></span>
+                                    <span id="s2EquityLabel" class="leader-val">$750,000</span>
+                                </div>
+                                <div class="leader-row">
+                                    <span>Invested (liquid)<span class="tooltip-wrap"><span
+                                                class="tooltip-icon">?</span><span class="tooltip-text">The value of
+                                                your
+                                                investment portfolio — money you can access without selling your
+                                                home.</span></span></span>
+                                    <span class="leader-line"></span>
+                                    <span id="s2VtsaxLabel" class="s2-text leader-val">$6,940,467</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Monthly Cash Flow -->
+            <div class="card">
+                <div class="cashflow-title">Monthly Cash Flow Comparison<span class="tooltip-wrap"><span
+                            class="tooltip-icon">?</span><span class="tooltip-text">How your monthly spending breaks
+                            down in each scenario. Both scenarios spend the same total amount each month.</span></span>
+                </div>
+                <div class="cashflow-subtitle">Both scenarios cost the same each month</div>
+                <div class="cashflow-grid">
+                    <div class="cashflow-card s1">
+                        <div class="cf-header">Scenario 1: Max Down</div>
+                        <div class="cf-rows">
+                            <div class="cf-row"><span class="cf-label">Mortgage P&I<span class="tooltip-wrap"><span
+                                            class="tooltip-icon">?</span><span class="tooltip-text">Principal & Interest
+                                            — the main monthly mortgage payment that goes toward paying down your loan
+                                            and its interest.</span></span></span><span class="cf-leader"></span><span
+                                    class="cf-val" id="cf-s1-pi">$1,264</span></div>
+                            <div class="cf-row"><span class="cf-label">Property Tax<span class="tooltip-wrap"><span
+                                            class="tooltip-icon">?</span><span class="tooltip-text">Monthly property tax
+                                            — calculated from the annual rate divided by 12.</span></span></span><span
+                                    class="cf-leader"></span><span class="cf-val" id="cf-s1-tax">$750</span></div>
+                            <div class="cf-row"><span class="cf-label">Insurance</span><span
+                                    class="cf-leader"></span><span class="cf-val" id="cf-s1-ins">$100</span></div>
+                            <div class="cf-row"><span class="cf-label">Maintenance</span><span
+                                    class="cf-leader"></span><span class="cf-val" id="cf-s1-mnt">$625</span></div>
+                            <div class="cf-row subtotal"><span class="cf-label">Housing Subtotal<span
+                                        class="tooltip-wrap"><span class="tooltip-icon">?</span><span
+                                            class="tooltip-text">Total monthly housing costs — mortgage, taxes,
+                                            insurance, and maintenance combined.</span></span></span><span
+                                    class="cf-leader"></span><span class="cf-val" id="cf-s1-sub">$2,739</span></div>
+                            <div class="cf-row investment"><span class="cf-label">Invested</span><span
+                                    class="cf-leader"></span><span class="cf-val s1-val" id="cf-s1-inv">$2,528</span>
+                            </div>
+                            <div class="cf-row total"><span class="cf-label">Total</span><span class="cf-val"
+                                    id="cf-s1-total">$5,267</span></div>
+                        </div>
+                    </div>
+                    <div class="cashflow-card s2">
+                        <div class="cf-header">Scenario 2: Invest the Difference</div>
+                        <div class="cf-rows">
+                            <div class="cf-row"><span class="cf-label">Mortgage P&I<span class="tooltip-wrap"><span
+                                            class="tooltip-icon">?</span><span class="tooltip-text">Principal & Interest
+                                            — the main monthly mortgage payment that goes toward paying down your loan
+                                            and its interest.</span></span></span><span class="cf-leader"></span><span
+                                    class="cf-val" id="cf-s2-pi">$3,792</span></div>
+                            <div class="cf-row"><span class="cf-label">Property Tax<span class="tooltip-wrap"><span
+                                            class="tooltip-icon">?</span><span class="tooltip-text">Monthly property tax
+                                            — calculated from the annual rate divided by 12.</span></span></span><span
+                                    class="cf-leader"></span><span class="cf-val" id="cf-s2-tax">$750</span></div>
+                            <div class="cf-row"><span class="cf-label">Insurance</span><span
+                                    class="cf-leader"></span><span class="cf-val" id="cf-s2-ins">$100</span></div>
+                            <div class="cf-row"><span class="cf-label">Maintenance</span><span
+                                    class="cf-leader"></span><span class="cf-val" id="cf-s2-mnt">$625</span></div>
+                            <div class="cf-row subtotal"><span class="cf-label">Housing Subtotal<span
+                                        class="tooltip-wrap"><span class="tooltip-icon">?</span><span
+                                            class="tooltip-text">Total monthly housing costs — mortgage, taxes,
+                                            insurance, and maintenance combined.</span></span></span><span
+                                    class="cf-leader"></span><span class="cf-val" id="cf-s2-sub">$5,267</span></div>
+                            <div class="cf-row investment"><span class="cf-label">Invested</span><span
+                                    class="cf-leader"></span><span class="cf-val s2-val" id="cf-s2-inv">$0</span></div>
+                            <div class="cf-row total"><span class="cf-label">Total</span><span class="cf-val"
+                                    id="cf-s2-total">$5,267</span></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="how-it-works">
+                    <div class="hiw-title">📋 How It Works</div>
+                    <div class="hiw-body" id="hiwBody">
+                        Both scenarios invest! Scenario 1 has less upfront to invest but <strong>$2,528/month</strong>
+                        available.
+                        Scenario 2 starts with <strong>$400,000</strong> to invest but only <strong>$0/month</strong>
+                        available.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabs: Charts / Year-by-Year -->
+            <div class="card" style="padding:0;">
+                <div class="tabs">
+                    <button class="tab-btn active" onclick="switchTab('charts')" id="tab-charts">Charts</button>
+                    <button class="tab-btn" onclick="switchTab('data')" id="tab-data">Year-by-Year Data</button>
+                </div>
+
+                <!-- Charts Tab -->
+                <div class="tab-content active" id="content-charts" style="padding: 24px;">
+                    <!-- Net Wealth Chart -->
+                    <div class="chart-section">
+                        <h3>Net Wealth Over Time</h3>
+                        <p class="chart-sub">Total assets (home equity + portfolio)</p>
+                        <div class="chart-wrapper"
+                            style="position: relative; width: 100%; height: 300px; min-width: 0;">
+                            <canvas id="netWealthChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Liquidity Chart -->
+                    <div class="chart-section">
+                        <h3>Liquidity Over Time</h3>
+                        <p class="chart-sub">Cash you can access without selling your home</p>
+                        <div class="chart-wrapper"
+                            style="position: relative; width: 100%; height: 300px; min-width: 0;">
+                            <canvas id="liquidityChart"></canvas>
+                        </div>
+                        <div class="chart-note important">
+                            <strong>Why This Matters:</strong> Scenario 1 has $0 liquidity (all wealth is trapped in
+                            home equity).
+                            Scenario 2 gives you accessible cash for emergencies, opportunities, or early retirement.
+                        </div>
+                    </div>
+
+                    <!-- Wealth Composition Chart -->
+                    <div class="chart-section">
+                        <h3>Wealth Composition (Year 30)</h3>
+                        <p class="chart-sub">How your wealth breaks down</p>
+                        <div class="chart-wrapper"
+                            style="position: relative; width: 100%; height: 280px; min-width: 0;">
+                            <canvas id="compositionChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Data Tab -->
+                <div class="tab-content" id="content-data" style="padding: 24px;">
+                    <div class="data-table-wrap">
+                        <table class="data-table" id="dataTable">
+                            <thead>
+                                <tr>
+                                    <th>Year</th>
+                                    <th>S1 Loan</th>
+                                    <th>S1 Invested</th>
+                                    <th>S1 Net Wealth</th>
+                                    <th>S2 Loan</th>
+                                    <th>S2 Invested</th>
+                                    <th>S2 Net Wealth</th>
+                                    <th>S2 Advantage</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dataTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <footer class="footer">
+        This calculator is for educational purposes only. Past market performance does not guarantee future results.
+        Consult a financial advisor for personalized advice.
+    </footer>
+
+    <script>
+        // ═══════════════════════════════════════════════
+        // GLOBALS
+        // ═══════════════════════════════════════════════
+        let netWealthChart, liquidityChart, compositionChart;
+
+        // ═══════════════════════════════════════════════
+        // THEME SETUP
+        // ═══════════════════════════════════════════════
+        const themeToggle = document.getElementById('themeToggle');
+        const htmlEl = document.documentElement;
+
+        function updateChartColors() {
+            const isDark = htmlEl.getAttribute('data-theme') === 'dark';
+            const textColor = isDark ? '#f9fafb' : '#1a1d23';
+            const gridColor = isDark ? '#374151' : '#f0f1f3';
+            const tooltipBg = isDark ? '#374151' : '#1a1d23';
+            const tooltipColor = '#f9fafb';
+
+            const updateOpts = (chart) => {
+                if (!chart) return;
+                chart.options.scales.x.grid.color = gridColor;
+                chart.options.scales.x.ticks.color = textColor;
+                if (chart.options.scales.y) {
+                    chart.options.scales.y.grid.color = gridColor;
+                    chart.options.scales.y.ticks.color = textColor;
+                }
+                chart.options.plugins.legend.labels.color = textColor;
+                chart.options.plugins.tooltip.backgroundColor = tooltipBg;
+                chart.options.plugins.tooltip.titleColor = tooltipColor;
+                chart.options.plugins.tooltip.bodyColor = tooltipColor;
+                chart.update('none');
+            };
+
+            updateOpts(netWealthChart);
+            updateOpts(liquidityChart);
+            updateOpts(compositionChart);
+        }
+
+        function setTheme(theme) {
+            htmlEl.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+            themeToggle.textContent = theme === 'dark' ? '☀️' : '🌙';
+            if (typeof netWealthChart !== 'undefined' && netWealthChart) {
+                updateChartColors();
+            }
+        }
+
+        themeToggle.addEventListener('click', () => {
+            const current = htmlEl.getAttribute('data-theme');
+            setTheme(current === 'dark' ? 'light' : 'dark');
+        });
+
+        const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        setTheme(savedTheme);
+
+        // ═══════════════════════════════════════════════
+        // MATH / OTHER GLOBALS
+        // ═══════════════════════════════════════════════
+        const fmt = (n) => '$' + Math.round(n).toLocaleString('en-US');
+        const fmtShort = (n) => {
+            if (Math.abs(n) >= 1e6) return '$' + (n / 1e6).toFixed(0) + 'M';
+            if (Math.abs(n) >= 1e3) return '$' + (n / 1e3).toFixed(0) + 'k';
+            return '$' + Math.round(n);
+        };
+
+        // ═══════════════════════════════════════════════
+        // INPUT SYNC (slider <-> number)
+        // ═══════════════════════════════════════════════
+        const simplePairs = [
+            ['homePrice', 'homePriceSlider'],
+            ['totalCash', 'totalCashSlider'],
+            ['mortgageRate', 'mortgageRateSlider'],
+            ['grossReturn', 'grossReturnSlider'],
+            ['loanTerm', 'loanTermSlider'],
+            ['propTax', 'propTaxSlider'],
+            ['insurance', 'insuranceSlider'],
+            ['maintenance', 'maintenanceSlider'],
+            ['divYield', 'divYieldSlider'],
+            ['divTax', 'divTaxSlider'],
+        ];
+
+        simplePairs.forEach(([numId, sliderId]) => {
+            const numEl = document.getElementById(numId);
+            const sliderEl = document.getElementById(sliderId);
+            numEl.addEventListener('input', () => {
+                sliderEl.value = numEl.value;
+                enforceConstraints(numId);
+                recalculate();
+            });
+            sliderEl.addEventListener('input', () => {
+                numEl.value = sliderEl.value;
+                enforceConstraints(sliderId);
+                recalculate();
+            });
+        });
+
+        // Scenario 2 Special Logic
+        const s2DownBox = document.getElementById('s2Down');
+        const s2InvestBox = document.getElementById('s2Invest');
+        const s2Slider = document.getElementById('s2DownSlider');
+
+        [s2DownBox, s2InvestBox, s2Slider].forEach(el => {
+            el.addEventListener('input', (e) => {
+                enforceConstraints(e.target.id);
+                recalculate();
+            });
+        });
+
+        function enforceConstraints(sourceId) {
+            const totalCash = parseFloat(document.getElementById('totalCash').value) || 0;
+            const homePrice = parseFloat(document.getElementById('homePrice').value) || 0;
+            const maxDown = Math.min(totalCash, homePrice);
+
+            // Adjust slider max to the lesser of homePrice or totalCash
+            s2Slider.max = maxDown;
+
+            let s2D = parseFloat(s2DownBox.value) || 0;
+            let s2I = parseFloat(s2InvestBox.value) || 0;
+
+            if (sourceId === 'totalCash' || sourceId === 'totalCashSlider' || sourceId === 'homePrice' || sourceId === 'homePriceSlider' || sourceId === 'init') {
+                if (s2D > maxDown) {
+                    s2D = maxDown;
+                }
+                s2I = totalCash - s2D;
+            } else if (sourceId === 's2Down' || sourceId === 's2DownSlider') {
+                s2D = parseFloat(sourceId === 's2Down' ? s2DownBox.value : s2Slider.value) || 0;
+                s2D = Math.min(s2D, maxDown);
+                s2I = totalCash - s2D;
+            } else if (sourceId === 's2Invest') {
+                s2I = Math.min(s2I, totalCash);
+                s2D = totalCash - s2I;
+                if (s2D > maxDown) {
+                    s2D = maxDown;
+                    s2I = totalCash - s2D;
+                }
+            }
+
+            s2DownBox.value = s2D;
+            s2Slider.value = s2D;
+            s2InvestBox.value = s2I;
+
+            const dpDisplay = document.getElementById('s2DownDisplay');
+            if (dpDisplay) dpDisplay.textContent = fmt(s2D);
+            const invDisplay = document.getElementById('s2InvestDisplay');
+            if (invDisplay) invDisplay.textContent = fmt(s2I);
+
+            // Enforce S1 Max Down
+            const s1D = Math.min(homePrice, totalCash);
+            document.getElementById('s1Down').value = s1D;
+            const s1Display = document.getElementById('s1DownDisplay');
+            if (s1Display) s1Display.textContent = fmt(s1D);
+        }
+
+        // Run once on load to sync everything correctly
+        document.addEventListener("DOMContentLoaded", () => {
+            enforceConstraints('init');
+        });
+
+        // ═══════════════════════════════════════════════
+        // ADVANCED TOGGLE
+        // ═══════════════════════════════════════════════
+        function toggleAdvanced() {
+            const toggle = document.getElementById('advancedToggle');
+            const body = document.getElementById('advancedBody');
+            toggle.classList.toggle('open');
+            body.classList.toggle('open');
+        }
+
+        // ═══════════════════════════════════════════════
+        // TABS
+        // ═══════════════════════════════════════════════
+        function switchTab(tab) {
+            document.getElementById('tab-charts').classList.toggle('active', tab === 'charts');
+            document.getElementById('tab-data').classList.toggle('active', tab === 'data');
+            document.getElementById('content-charts').classList.toggle('active', tab === 'charts');
+            document.getElementById('content-data').classList.toggle('active', tab === 'data');
+        }
+
+        // ═══════════════════════════════════════════════
+        // MATH ENGINE
+        // ═══════════════════════════════════════════════
+        function getInputs() {
+            return {
+                homePrice: parseFloat(document.getElementById('homePrice').value) || 0,
+                totalCash: parseFloat(document.getElementById('totalCash').value) || 0,
+                s1Down: parseFloat(document.getElementById('s1Down').value) || 0,
+                s2Down: parseFloat(document.getElementById('s2Down').value) || 0,
+                mortgageRate: (parseFloat(document.getElementById('mortgageRate').value) || 0) / 100,
+                grossReturn: (parseFloat(document.getElementById('grossReturn').value) || 0) / 100,
+                loanTerm: parseInt(document.getElementById('loanTerm').value) || 30,
+                propTax: (parseFloat(document.getElementById('propTax').value) || 0) / 100,
+                insurance: parseFloat(document.getElementById('insurance').value) || 0,
+                maintenance: (parseFloat(document.getElementById('maintenance').value) || 0) / 100,
+                divYield: (parseFloat(document.getElementById('divYield').value) || 0) / 100,
+                divTax: (parseFloat(document.getElementById('divTax').value) || 0) / 100,
+            };
+        }
+
+        function calcMonthlyPayment(principal, annualRate, termYears) {
+            if (principal <= 0) return 0;
+            if (annualRate <= 0) return principal / (termYears * 12);
+            const r = annualRate / 12;
+            const n = termYears * 12;
+            return principal * (r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
+        }
+
+        function calcLoanBalance(principal, annualRate, termYears, monthsPaid) {
+            if (principal <= 0) return 0;
+            if (annualRate <= 0) return Math.max(0, principal - (principal / (termYears * 12)) * monthsPaid);
+            const r = annualRate / 12;
+            const n = termYears * 12;
+            if (monthsPaid >= n) return 0;
+            return principal * (Math.pow(1 + r, n) - Math.pow(1 + r, monthsPaid)) / (Math.pow(1 + r, n) - 1);
+        }
+
+        function runModel(inputs) {
+            const { homePrice, s1Down, s2Down, mortgageRate, grossReturn,
+                loanTerm, propTax, insurance, maintenance, divYield, divTax } = inputs;
+
+            // Tax drag
+            const taxDrag = divYield * divTax;
+            const netReturn = grossReturn - taxDrag;
+            const monthlyReturn = netReturn / 12;
+
+            // Loan amounts
+            const s1Loan = Math.max(0, homePrice - s1Down);
+            const s2Loan = Math.max(0, homePrice - s2Down);
+
+            // Monthly P&I
+            const s1PI = calcMonthlyPayment(s1Loan, mortgageRate, loanTerm);
+            const s2PI = calcMonthlyPayment(s2Loan, mortgageRate, loanTerm);
+
+            // Common monthly costs
+            const monthlyPropTax = (homePrice * propTax) / 12;
+            const monthlyIns = insurance / 12;
+            const monthlyMnt = (homePrice * maintenance) / 12;
+            const commonCosts = monthlyPropTax + monthlyIns + monthlyMnt;
+
+            // Total monthly housing
+            const s1Housing = s1PI + commonCosts;
+            const s2Housing = s2PI + commonCosts;
+
+            // The key insight: both scenarios spend the SAME total monthly amount
+            // The higher-housing-cost scenario invests $0; the lower one invests the difference
+            const maxHousing = Math.max(s1Housing, s2Housing);
+            const s1Investment = maxHousing - s1Housing;
+            const s2Investment = maxHousing - s2Housing;
+
+            const s1StartVTSAX = Math.max(0, inputs.totalCash - s1Down);
+            const s2StartVTSAX = Math.max(0, inputs.totalCash - s2Down);
+
+            // Year-by-year simulation (monthly steps)
+            const years = [];
+            let s1VTSAX = s1StartVTSAX;
+            let s2VTSAX = s2StartVTSAX;
+
+            for (let year = 0; year <= loanTerm; year++) {
+                const monthsPaid = year * 12;
+                const s1LoanBal = calcLoanBalance(s1Loan, mortgageRate, loanTerm, monthsPaid);
+                const s2LoanBal = calcLoanBalance(s2Loan, mortgageRate, loanTerm, monthsPaid);
+                const s1Equity = homePrice - s1LoanBal;
+                const s2Equity = homePrice - s2LoanBal;
+                const s1Net = s1Equity + s1VTSAX;
+                const s2Net = s2Equity + s2VTSAX;
+
+                years.push({
+                    year,
+                    s1Loan: s1LoanBal,
+                    s1VTSAX,
+                    s1Net,
+                    s2Loan: s2LoanBal,
+                    s2VTSAX,
+                    s2Net,
+                    advantage: s2Net - s1Net,
+                });
+
+                // Compound for next year (12 months)
+                if (year < loanTerm) {
+                    for (let m = 0; m < 12; m++) {
+                        s1VTSAX = s1VTSAX * (1 + monthlyReturn) + s1Investment;
+                        s2VTSAX = s2VTSAX * (1 + monthlyReturn) + s2Investment;
+                    }
+                }
+            }
+
+            return {
+                taxDrag, netReturn,
+                s1Loan, s2Loan,
+                s1PI, s2PI,
+                monthlyPropTax, monthlyIns, monthlyMnt, commonCosts,
+                s1Housing, s2Housing,
+                s1Investment, s2Investment,
+                s1StartVTSAX, s2StartVTSAX,
+                years,
+                loanTerm,
+            };
+        }
+
+        // ═══════════════════════════════════════════════
+        // UPDATE UI
+        // ═══════════════════════════════════════════════
+        function recalculate() {
+            const inputs = getInputs();
+            const model = runModel(inputs);
+            const finalYear = model.years[model.years.length - 1];
+
+            // Dynamic Title
+            const advAmount = Math.abs(finalYear.advantage);
+            const s2WinsCheck = finalYear.advantage >= 0;
+            const winnerStrategy = s2WinsCheck
+                ? 'minimized the down payment'
+                : 'put the max down';
+            document.getElementById('bottomLineTitle').textContent =
+                `At year ${model.loanTerm}, you'd have ${fmt(advAmount)} more if you ${winnerStrategy}.`;
+
+            // Scenario notes
+            const s1Pct = inputs.homePrice > 0 ? ((inputs.s1Down / inputs.homePrice) * 100).toFixed(1) : '0';
+            const s1Note = inputs.totalCash > inputs.homePrice ? `${s1Pct}% down — extra cash (${fmt(inputs.totalCash - inputs.s1Down)}) invested` : `${s1Pct}% down — 100% of cash goes to the house`;
+            document.getElementById('s1PctNote').textContent = s1Note;
+
+            // Net return note
+            const taxDragPct = (model.taxDrag * 100).toFixed(2);
+            const netReturnPct = (model.netReturn * 100).toFixed(2);
+            const grossReturnPct = (inputs.grossReturn * 100).toFixed(2);
+            document.getElementById('netReturnNote').textContent = `Net Return (after dividend taxes): ${netReturnPct}%`;
+
+            // Tax drag box
+            document.getElementById('taxDragDetail').innerHTML =
+                `Net Return: ${netReturnPct}%<br>(${grossReturnPct}% gross − ${taxDragPct}% tax)`;
+
+            // Bottom Line - determine winner
+            const adv = finalYear.advantage; // adv = s2Net - s1Net
+            const advAbs = Math.abs(adv);
+            const s2Wins = adv >= 0;
+
+            // Dynamic State Switching
+            const s1ResultEl = document.getElementById('s1Result');
+            const s2ResultEl = document.getElementById('s2Result');
+
+            s1ResultEl.className = s2Wins ? 'scenario-result baseline' : 'scenario-result pro-tier winner';
+            s2ResultEl.className = s2Wins ? 'scenario-result pro-tier winner' : 'scenario-result baseline';
+
+            // HTML constructors for Footers and Badges
+            const pctWinS1 = finalYear.s2Net > 0 ? ((advAbs / finalYear.s2Net) * 100).toFixed(1) : '0';
+            const pctWinS2 = finalYear.s1Net > 0 ? ((advAbs / finalYear.s1Net) * 100).toFixed(1) : '0';
+
+            const heroFooterHTML = (val, pct, winnerName) => `
+                <div class="result-footer footer-hero">
+                    <div class="footer-title">✨ WEALTH ADVANTAGE</div>
+                    <div class="footer-value">+${fmt(val)}</div>
+                    <div class="footer-sub">${winnerName} wins by ${pct}%</div>
+                </div>
+            `;
+
+            const baselineFooterHTML = (val) => `
+                <div class="result-footer footer-baseline">
+                    <div class="footer-title">📉 OPPORTUNITY COST</div>
+                    <div class="footer-value">-$${fmt(val).replace('$', '')}</div>
+                    <div class="footer-sub">Baseline strategy leaves money on the table</div>
+                </div>
+            `;
+
+            const badgeHTML = `<div class="winner-badge" id="winnerBadge">✓ WINNER</div>`;
+
+            // Reset badges & Clear old static footers
+            const existingBadges = document.querySelectorAll('.winner-badge');
+            existingBadges.forEach(b => b.remove());
+            const existingS1Footer = s1ResultEl.querySelector('.result-footer');
+            if (existingS1Footer) existingS1Footer.remove();
+            const existingS2Footer = s2ResultEl.querySelector('.result-footer');
+            if (existingS2Footer) existingS2Footer.remove();
+
+            // Inject new dynamic states
+            if (s2Wins) {
+                s2ResultEl.insertAdjacentHTML('afterbegin', badgeHTML);
+                s1ResultEl.insertAdjacentHTML('beforeend', baselineFooterHTML(advAbs));
+                s2ResultEl.insertAdjacentHTML('beforeend', heroFooterHTML(advAbs, pctWinS2, 'Scenario 2'));
+            } else {
+                s1ResultEl.insertAdjacentHTML('afterbegin', badgeHTML);
+                s1ResultEl.insertAdjacentHTML('beforeend', heroFooterHTML(advAbs, pctWinS1, 'Scenario 1'));
+                s2ResultEl.insertAdjacentHTML('beforeend', baselineFooterHTML(advAbs));
+            }
+
+            document.getElementById('s1Wealth').textContent = fmt(finalYear.s1Net);
+            document.getElementById('s1EquityLabel').textContent = fmt(finalYear.s1Net - finalYear.s1VTSAX);
+            document.getElementById('s1VtsaxLabel').textContent = fmt(finalYear.s1VTSAX);
+
+            document.getElementById('s2Wealth').textContent = fmt(finalYear.s2Net);
+            document.getElementById('s2EquityLabel').textContent = fmt(finalYear.s2Net - finalYear.s2VTSAX);
+            document.getElementById('s2VtsaxLabel').textContent = fmt(finalYear.s2VTSAX);
+            // Monthly Cash Flow
+            document.getElementById('cf-s1-pi').textContent = fmt(model.s1PI);
+            document.getElementById('cf-s1-tax').textContent = fmt(model.monthlyPropTax);
+            document.getElementById('cf-s1-ins').textContent = fmt(model.monthlyIns);
+            document.getElementById('cf-s1-mnt').textContent = fmt(model.monthlyMnt);
+            document.getElementById('cf-s1-sub').textContent = fmt(model.s1Housing);
+            document.getElementById('cf-s1-inv').textContent = fmt(model.s1Investment);
+            document.getElementById('cf-s1-total').textContent = fmt(model.s1Housing + model.s1Investment);
+
+            document.getElementById('cf-s2-pi').textContent = fmt(model.s2PI);
+            document.getElementById('cf-s2-tax').textContent = fmt(model.monthlyPropTax);
+            document.getElementById('cf-s2-ins').textContent = fmt(model.monthlyIns);
+            document.getElementById('cf-s2-mnt').textContent = fmt(model.monthlyMnt);
+            document.getElementById('cf-s2-sub').textContent = fmt(model.s2Housing);
+            document.getElementById('cf-s2-inv').textContent = fmt(model.s2Investment);
+            document.getElementById('cf-s2-total').textContent = fmt(model.s2Housing + model.s2Investment);
+
+            // How It Works
+            document.getElementById('hiwBody').innerHTML =
+                `Both scenarios invest! Scenario 1 has less upfront to invest but <strong>${fmt(model.s1Investment)}/month</strong> available. ` +
+                `Scenario 2 starts with <strong>${fmt(model.s2StartVTSAX)}</strong> to invest but only <strong>${fmt(model.s2Investment)}/month</strong> available.`;
+
+            // Charts
+            updateCharts(model);
+
+            // Data table
+            updateTable(model);
+        }
+
+        // ═══════════════════════════════════════════════
+        // CHARTS
+        // ═══════════════════════════════════════════════
+        function getCommonOpts() {
+            return {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: { mode: 'index', intersect: false },
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            usePointStyle: true,
+                            padding: 20,
+                            font: { family: 'Inter', size: 12 },
+                        },
+                    },
+                    tooltip: {
+                        backgroundColor: '#1a1d23',
+                        titleFont: { family: 'Inter', weight: '600' },
+                        bodyFont: { family: 'Inter', size: 13 },
+                        padding: 12,
+                        cornerRadius: 8,
+                        callbacks: {
+                            label: (ctx) => `${ctx.dataset.label}: ${fmt(ctx.parsed.y)}`,
+                        },
+                    },
+                },
+                scales: {
+                    x: {
+                        title: { display: true, text: 'Year', font: { family: 'Inter', size: 12, weight: '500' } },
+                        grid: { color: '#f0f1f3' },
+                        ticks: { font: { family: 'Inter', size: 11 } },
+                    },
+                    y: {
+                        title: { display: false },
+                        grid: { color: '#f0f1f3' },
+                        ticks: {
+                            font: { family: 'Inter', size: 11 },
+                            callback: (v) => fmtShort(v),
+                        },
+                    },
+                },
+                elements: {
+                    point: { radius: 4, hoverRadius: 6, borderWidth: 2, backgroundColor: 'white' },
+                    line: { borderWidth: 2.5, tension: 0.1 },
+                },
+            };
+        }
+
+        function initCharts() {
+            // Net Wealth Chart
+            netWealthChart = new Chart(document.getElementById('netWealthChart'), {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [
+                        {
+                            label: 'Scenario 1: Large Down',
+                            data: [],
+                            borderColor: '#3b82f6',
+                            pointBorderColor: '#3b82f6',
+                            backgroundColor: 'rgba(59,130,246,0.05)',
+                            fill: false,
+                        },
+                        {
+                            label: 'Scenario 2: Invest Difference',
+                            data: [],
+                            borderColor: '#8b5cf6',
+                            pointBorderColor: '#8b5cf6',
+                            backgroundColor: 'rgba(139,92,246,0.05)',
+                            fill: false,
+                        },
+                    ],
+                },
+                options: getCommonOpts(),
+            });
+
+            // Liquidity Chart
+            liquidityChart = new Chart(document.getElementById('liquidityChart'), {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [
+                        {
+                            label: 'Scenario 1: Portfolio (Liquid)',
+                            data: [],
+                            borderColor: '#3b82f6',
+                            pointBorderColor: '#3b82f6',
+                            backgroundColor: 'rgba(59,130,246,0.08)',
+                            fill: true,
+                        },
+                        {
+                            label: 'Scenario 2: Portfolio (Liquid)',
+                            data: [],
+                            borderColor: '#8b5cf6',
+                            pointBorderColor: '#8b5cf6',
+                            backgroundColor: 'rgba(139,92,246,0.08)',
+                            fill: true,
+                        },
+                    ],
+                },
+                options: getCommonOpts(),
+            });
+
+            // Composition Chart (bar)
+            compositionChart = new Chart(document.getElementById('compositionChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['Scenario 1', 'Scenario 2'],
+                    datasets: [
+                        {
+                            label: 'Home Equity',
+                            data: [0, 0],
+                            backgroundColor: '#3b82f6',
+                            borderRadius: 4,
+                        },
+                        {
+                            label: 'Portfolio',
+                            data: [0, 0],
+                            backgroundColor: '#8b5cf6',
+                            borderRadius: 4,
+                        },
+                    ],
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 20,
+                                font: { family: 'Inter', size: 12 },
+                            },
+                        },
+                        tooltip: {
+                            backgroundColor: '#1a1d23',
+                            titleFont: { family: 'Inter', weight: '600' },
+                            bodyFont: { family: 'Inter', size: 13 },
+                            padding: 12,
+                            cornerRadius: 8,
+                            callbacks: {
+                                label: (ctx) => `${ctx.dataset.label}: ${fmt(ctx.parsed.y)}`,
+                            },
+                        },
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: { font: { family: 'Inter', size: 12, weight: '600' } },
+                        },
+                        y: {
+                            stacked: true,
+                            grid: { color: '#f0f1f3' },
+                            ticks: {
+                                font: { family: 'Inter', size: 11 },
+                                callback: (v) => fmtShort(v),
+                            },
+                        },
+                    },
+                },
+            });
+        }
+
+        function updateCharts(model) {
+            const labels = model.years.map(y => y.year);
+
+            // Net Wealth
+            netWealthChart.data.labels = labels;
+            netWealthChart.data.datasets[0].data = model.years.map(y => y.s1Net);
+            netWealthChart.data.datasets[1].data = model.years.map(y => y.s2Net);
+            netWealthChart.update('none');
+
+            // Liquidity
+            liquidityChart.data.labels = labels;
+            liquidityChart.data.datasets[0].data = model.years.map(y => y.s1VTSAX);
+            liquidityChart.data.datasets[1].data = model.years.map(y => y.s2VTSAX);
+            liquidityChart.update('none');
+
+            // Composition
+            const last = model.years[model.years.length - 1];
+            const s1Equity = model.years[0] ? (getInputs().homePrice) : 0;
+            compositionChart.data.datasets[0].data = [s1Equity, s1Equity];
+            compositionChart.data.datasets[1].data = [last.s1VTSAX, last.s2VTSAX];
+            compositionChart.update('none');
+        }
+
+        // Handle window resize dynamically ensuring canvases don't lock grid widths
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                if (netWealthChart) netWealthChart.resize();
+                if (liquidityChart) liquidityChart.resize();
+                if (compositionChart) compositionChart.resize();
+            }, 100);
+        });
+
+        // ═══════════════════════════════════════════════
+        // DATA TABLE
+        // ═══════════════════════════════════════════════
+        function updateTable(model) {
+            const tbody = document.getElementById('dataTableBody');
+            tbody.innerHTML = '';
+            model.years.forEach(row => {
+                if (row.year === 0) return; // skip year 0
+                const tr = document.createElement('tr');
+                if (row.year === model.loanTerm) tr.classList.add('highlight');
+                const advClass = row.advantage >= 0 ? 'positive' : 'negative';
+                tr.innerHTML = `
+          <td>${row.year}</td>
+          <td>${fmt(row.s1Loan)}</td>
+          <td>${fmt(row.s1VTSAX)}</td>
+          <td>${fmt(row.s1Net)}</td>
+          <td>${fmt(row.s2Loan)}</td>
+          <td>${fmt(row.s2VTSAX)}</td>
+          <td>${fmt(row.s2Net)}</td>
+          <td class="${advClass}">${(row.advantage >= 0 ? '+' : '-') + fmt(Math.abs(row.advantage))}</td>
+        `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // ═══════════════════════════════════════════════
+        // INIT
+        // ═══════════════════════════════════════════════
+        initCharts();
+        updateChartColors(); // Apply theme colors to charts immediately
+        recalculate();
+    </script>
+</body>
+
+</html>
