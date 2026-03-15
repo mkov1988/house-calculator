@@ -269,7 +269,7 @@
             top: 1.3333rem;
         }
 
-        .inputs-panel .panel-title {
+        .panel-title {
             font-size: var(--text-lg);
             font-weight: 700;
             margin-bottom: 2px;
@@ -278,7 +278,7 @@
             gap: 0.5333rem;
         }
 
-        .inputs-panel .panel-subtitle {
+        .panel-subtitle {
             color: var(--text-secondary);
             font-size: var(--text-sm);
             margin-bottom: 1.3333rem;
@@ -1077,8 +1077,10 @@
        RESPONSIVE
        ═══════════════════════════════════════════════ */
         @media (max-width: 60rem) {
-            .inputs-panel {
+            .inputs-panel,
+            .invest-inputs-panel {
                 position: static;
+                max-height: none;
             }
 
             .header h1 {
@@ -1147,8 +1149,14 @@
         }
 
         @media (max-width: 1024px) {
-            .app-container {
+            .app-container,
+            .invest-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .invest-inputs-panel {
+                position: static;
+                max-height: none;
             }
         }
 
@@ -1504,42 +1512,36 @@
             width: 95vw;
             max-width: 1600px;
             margin: 0 auto;
-            padding: 0 1.6rem 6rem;
+            padding: 2.5rem 1.6rem 4rem;
         }
 
-        .invest-container {
+        /* Sidebar + Main grid — mirrors .app-container */
+        .invest-grid {
+            display: grid;
+            grid-template-columns: clamp(300px, 25vw, 400px) 1fr;
+            gap: 2rem;
+        }
+
+        .invest-grid > * {
+            min-width: 0;
+        }
+
+        .invest-inputs-panel {
+            padding: 2rem 1.5rem;
+            align-self: start;
+            position: sticky;
+            top: 80px;
+            max-height: calc(100vh - 100px);
+            overflow-y: auto;
+        }
+
+        .invest-output-panel {
             display: flex;
             flex-direction: column;
             gap: 1.6rem;
         }
 
-        .invest-header {
-            text-align: center;
-            padding: 3rem 0 1rem;
-        }
-
-        .invest-title {
-            font-size: var(--text-2xl);
-            font-weight: 800;
-            margin-bottom: 0.5rem;
-        }
-
-        .invest-subtitle {
-            font-size: var(--text-base);
-            color: var(--text-secondary);
-        }
-
-        /* Input Bar */
-        .invest-input-bar {
-            padding: 2rem;
-        }
-
-        .invest-inputs-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 2rem;
-            margin-bottom: 1.6rem;
-        }
+        /* (invest-inputs-grid no longer used — inputs stack in sidebar) */
 
         .invest-hint {
             font-size: var(--text-sm);
@@ -1605,6 +1607,39 @@
             font-size: var(--text-sm);
             color: var(--text-secondary);
             font-style: italic;
+        }
+
+        /* Sync Banner */
+        .invest-sync-banner {
+            background: var(--accent-light);
+            border: 1px solid var(--accent);
+            border-radius: var(--radius-sm);
+            padding: 0.75rem 1rem;
+            font-size: var(--text-sm);
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            line-height: 1.4;
+        }
+
+        .invest-sync-banner .sync-icon {
+            flex-shrink: 0;
+        }
+
+        .invest-sync-banner .sync-dismiss {
+            margin-left: auto;
+            background: none;
+            border: none;
+            font-size: 1rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+            padding: 0 0.25rem;
+            flex-shrink: 0;
+        }
+
+        .invest-sync-banner .sync-dismiss:hover {
+            color: var(--text);
         }
 
         /* Banner */
@@ -1957,17 +1992,7 @@
         }
 
         /* Responsive */
-        @media (max-width: 1023px) {
-            .invest-inputs-grid {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
-
         @media (max-width: 767px) {
-            .invest-inputs-grid {
-                grid-template-columns: 1fr;
-            }
-
             .invest-stat-cards {
                 grid-template-columns: 1fr;
             }
@@ -2430,7 +2455,7 @@
             <!-- Cross-link to Investment Growth -->
             <div class="cross-link" id="mortgage-to-invest" onclick="switchSection('investment-calculator')">
                 <span>📈</span>
-                <span>Want to explore how the invested difference grows? See it in the Investment Growth Calculator</span>
+                <span id="mortgage-to-invest-text">Want to explore how the invested difference grows? See it in the Investment Growth Calculator</span>
                 <span class="cross-link-arrow">→</span>
             </div>
 
@@ -2444,12 +2469,79 @@
         <span class="divider-ornament">◆</span>
     </div>
 
-    <section id="investment-calculator" class="invest-section">
-        <div class="invest-container">
-            <header class="invest-header">
-                <h2 class="invest-title">Investment Growth Calculator</h2>
-                <p class="invest-subtitle">How does your money grow over time across different fund types?</p>
-            </header>
+    <section id="investment-calculator" class="invest-section invest-grid">
+
+        <!-- ─── LEFT: INPUTS ─── -->
+        <aside class="invest-inputs-panel card">
+            <div class="panel-title">📈 Your Inputs</div>
+            <div class="panel-subtitle">Set your investment parameters</div>
+
+            <div class="input-group">
+                <label for="invest-initial">Initial Investment</label>
+                <div class="input-row">
+                    <span class="unit">$</span>
+                    <input type="number" id="invest-initial-num" value="10000" min="0" max="1000000" step="500">
+                </div>
+                <input type="range" id="invest-initial" min="0" max="1000000" step="500" value="10000">
+            </div>
+
+            <div class="input-group">
+                <label for="invest-monthly">Monthly Contribution</label>
+                <div class="input-row">
+                    <span class="unit">$</span>
+                    <input type="number" id="invest-monthly-num" value="500" min="0" max="10000" step="50">
+                </div>
+                <input type="range" id="invest-monthly" min="0" max="10000" step="50" value="500">
+                <p class="invest-hint" id="invest-hint-escalate">Tip: Many people increase contributions yearly →</p>
+            </div>
+
+            <div class="input-group">
+                <label for="invest-years">Time Horizon</label>
+                <div class="input-row">
+                    <input type="number" id="invest-years-num" value="25" min="1" max="50" step="1">
+                    <span class="unit">yrs</span>
+                </div>
+                <input type="range" id="invest-years" min="1" max="50" step="1" value="25">
+            </div>
+
+            <!-- Fund pills -->
+            <div class="invest-funds-row">
+                <span class="invest-funds-label">Fund Types</span>
+                <div class="invest-pills" id="invest-pills">
+                    <!-- Pills generated by JS from FUND_CONFIG -->
+                </div>
+                <p class="invest-nominal-note">Select multiple to compare · Returns shown are nominal (not adjusted for inflation)</p>
+            </div>
+
+            <!-- Customize toggle -->
+            <div class="advanced-toggle" id="invest-advanced-toggle">
+                <span style="color:var(--accent);">Customize Assumptions</span>
+                <span class="chevron">▾</span>
+            </div>
+            <div class="invest-advanced-body" id="invest-advanced-body">
+                <!-- Generated by JS based on selected funds -->
+            </div>
+
+            <!-- Fee Card (visible only when Advanced is open) -->
+            <div class="card invest-fee-card" id="invest-fee-card" hidden>
+                <div class="fee-card-header">💡 Fee Impact</div>
+                <div class="fee-card-body" id="invest-fee-body"></div>
+            </div>
+
+            <!-- How It Works -->
+            <div class="how-it-works">
+                <div class="hiw-title">📋 How It Works</div>
+                <div class="hiw-body">
+                    This calculator compounds your initial investment and monthly contributions at each fund's historical average return, minus its annual expense ratio. Contributions are assumed to be made monthly. All values are <strong>nominal — not adjusted for inflation</strong>. Use the Customize panel to adjust return assumptions and model contribution increases over time.
+                </div>
+            </div>
+        </aside>
+
+        <!-- ─── RIGHT: OUTPUTS ─── -->
+        <main class="invest-output-panel">
+
+            <!-- Sync Banner (appears when navigating from mortgage) -->
+            <div class="invest-sync-banner" id="invest-sync-banner" hidden></div>
 
             <!-- Summary Banner -->
             <div class="invest-banner card" id="invest-banner">
@@ -2474,64 +2566,6 @@
                 Projections use historical averages and do not guarantee future results.
                 Actual returns vary year to year, including negative years. Not financial advice.
             </p>
-
-            <!-- Input Bar -->
-            <div class="invest-input-bar card">
-                <!-- Row 1: 3 sliders -->
-                <div class="invest-inputs-grid">
-                    <div class="input-group">
-                        <label for="invest-initial">Initial Investment</label>
-                        <div class="input-row">
-                            <span class="unit">$</span>
-                            <input type="number" id="invest-initial-num" value="10000" min="0" max="1000000" step="500">
-                        </div>
-                        <input type="range" id="invest-initial" min="0" max="1000000" step="500" value="10000">
-                    </div>
-
-                    <div class="input-group">
-                        <label for="invest-monthly">Monthly Contribution</label>
-                        <div class="input-row">
-                            <span class="unit">$</span>
-                            <input type="number" id="invest-monthly-num" value="500" min="0" max="10000" step="50">
-                        </div>
-                        <input type="range" id="invest-monthly" min="0" max="10000" step="50" value="500">
-                        <p class="invest-hint" id="invest-hint-escalate">Tip: Many people increase contributions yearly →</p>
-                    </div>
-
-                    <div class="input-group">
-                        <label for="invest-years">Time Horizon</label>
-                        <div class="input-row">
-                            <input type="number" id="invest-years-num" value="25" min="1" max="50" step="1">
-                            <span class="unit">yrs</span>
-                        </div>
-                        <input type="range" id="invest-years" min="1" max="50" step="1" value="25">
-                    </div>
-                </div>
-
-                <!-- Row 2: Fund pills -->
-                <div class="invest-funds-row">
-                    <span class="invest-funds-label">Fund Types</span>
-                    <div class="invest-pills" id="invest-pills">
-                        <!-- Pills generated by JS from FUND_CONFIG -->
-                    </div>
-                    <p class="invest-nominal-note">Select multiple to compare · Returns shown are nominal (not adjusted for inflation)</p>
-                </div>
-
-                <!-- Row 3: Customize toggle -->
-                <div class="advanced-toggle" id="invest-advanced-toggle">
-                    <span style="color:var(--accent);">Customize Assumptions</span>
-                    <span class="chevron">▾</span>
-                </div>
-                <div class="invest-advanced-body" id="invest-advanced-body">
-                    <!-- Generated by JS based on selected funds -->
-                </div>
-            </div>
-
-            <!-- Fee Card (visible only when Advanced is open) -->
-            <div class="card invest-fee-card" id="invest-fee-card" hidden>
-                <div class="fee-card-header">💡 Fee Impact</div>
-                <div class="fee-card-body" id="invest-fee-body"></div>
-            </div>
 
             <!-- Stat Cards -->
             <div class="invest-stat-cards">
@@ -2570,14 +2604,6 @@
                 </div>
             </div>
 
-            <!-- How It Works -->
-            <div class="how-it-works">
-                <div class="hiw-title">📋 How It Works</div>
-                <div class="hiw-body">
-                    This calculator compounds your initial investment and monthly contributions at each fund's historical average return, minus its annual expense ratio. Contributions are assumed to be made monthly. All values are <strong>nominal — not adjusted for inflation</strong>. Use the Customize panel to adjust return assumptions and model contribution increases over time.
-                </div>
-            </div>
-
             <!-- Data Table -->
             <div class="invest-table-section">
                 <button class="invest-table-toggle" id="invest-table-toggle" aria-expanded="false">
@@ -2599,7 +2625,7 @@
                 <span>See how this fits into a home-buying decision — Mortgage vs. Invest Calculator</span>
                 <span class="cross-link-arrow">→</span>
             </div>
-        </div>
+        </main>
     </section>
 
     <footer class="footer">
@@ -3039,6 +3065,13 @@
 
             // Data table
             updateTable(model);
+
+            // Update cross-link with contextual data
+            const crossText = document.getElementById('mortgage-to-invest-text');
+            if (crossText) {
+                const investAmt = fmt(parseFloat(document.getElementById('s2Invest').value) || 0);
+                crossText.textContent = `Explore how ${investAmt} grows across different fund types → Investment Growth Calculator`;
+            }
         }
 
         // ═══════════════════════════════════════════════
@@ -4125,6 +4158,43 @@
             el.classList.remove('section-fading-out');
         }
 
+        // ── Shared State: bridge mortgage → investment values ──
+        function syncMortgageToInvestment() {
+            const s2Invest = parseFloat(document.getElementById('s2Invest').value) || 0;
+            const grossReturn = parseFloat(document.getElementById('grossReturn').value) || 10;
+            const loanTerm = parseInt(document.getElementById('loanTerm').value) || 30;
+
+            // Pre-populate investment calculator with mortgage scenario values
+            const initialEl = document.getElementById('invest-initial-num');
+            const initialSlider = document.getElementById('invest-initial');
+            const yearsEl = document.getElementById('invest-years-num');
+            const yearsSlider = document.getElementById('invest-years');
+
+            if (s2Invest > 0) {
+                initialEl.value = s2Invest;
+                initialSlider.value = Math.min(s2Invest, parseFloat(initialSlider.max));
+            }
+            yearsEl.value = loanTerm;
+            yearsSlider.value = loanTerm;
+
+            // Update the sync banner
+            updateSyncBanner(s2Invest, grossReturn, loanTerm);
+
+            updateInvestment();
+        }
+
+        function updateSyncBanner(amount, grossReturn, years) {
+            const banner = document.getElementById('invest-sync-banner');
+            if (!banner) return;
+            if (amount > 0) {
+                const fmtAmt = '$' + Math.round(amount).toLocaleString('en-US');
+                banner.innerHTML = `<span class="sync-icon">🔗</span> Pre-filled from your mortgage scenario: <strong>${fmtAmt}</strong> initial investment over <strong>${years} years</strong>. <button class="sync-dismiss" onclick="this.parentElement.hidden=true">✕</button>`;
+                banner.hidden = false;
+            } else {
+                banner.hidden = true;
+            }
+        }
+
         function switchSection(sectionId) {
             if (sectionId === activeSection) return;
 
@@ -4142,6 +4212,11 @@
             sectionLabel.textContent = sectionId === 'investment-calculator'
                 ? 'Investment Growth Calculator'
                 : 'Mortgage vs. Invest';
+
+            // Sync shared state when navigating mortgage → investment
+            if (sectionId === 'investment-calculator' && activeSection === 'mortgage-calculator') {
+                syncMortgageToInvestment();
+            }
 
             // Determine what's fading out and what's fading in
             const outEls = sectionId === 'investment-calculator'
