@@ -44,6 +44,15 @@
             --s2-color: #7c3aed;
             --equity-color: #3b82f6;
             --portfolio-color: #7c3aed;
+            /* Investment Calculator Fund Colors */
+            --invest-stock: #4f46e5;
+            --invest-sp500: #2563eb;
+            --invest-intl: #0d9488;
+            --invest-bonds: #d97706;
+            --invest-target: #e11d48;
+            --invest-hysa: #64748b;
+            --invest-contrib: rgba(100, 116, 139, 0.5);
+
             --radius: 0.8rem;
             --radius-sm: 0.5333rem;
             --shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
@@ -77,6 +86,14 @@
             --shadow-md: 0 0.2667rem 0.8rem rgba(0, 0, 0, 0.7), 0 2px 0.2667rem rgba(0, 0, 0, 0.4);
             --input-bg: #111827;
             /* Dark background for input fields */
+            /* Investment Calculator Fund Colors (Dark) */
+            --invest-stock: #818cf8;
+            --invest-sp500: #60a5fa;
+            --invest-intl: #2dd4bf;
+            --invest-bonds: #fbbf24;
+            --invest-target: #fb7185;
+            --invest-hysa: #94a3b8;
+            --invest-contrib: rgba(148, 163, 184, 0.5);
             --s1-footer-bg: #1e293b;
             --s2-footer-bg: #2e1065;
             --footer-title-color: #94a3b8;
@@ -1270,6 +1287,609 @@
         .cf-row .tooltip-wrap .tooltip-text {
             max-width: 220px;
         }
+
+        /* ═══════════════════════════════════════════════
+       SECTION NAV TABS (Header)
+       ═══════════════════════════════════════════════ */
+        .section-nav {
+            display: flex;
+            gap: 0.25rem;
+            margin-left: 1.5rem;
+        }
+
+        .section-nav-btn {
+            background: none;
+            border: none;
+            font-family: inherit;
+            font-size: var(--text-sm);
+            font-weight: 600;
+            color: var(--text-secondary);
+            padding: 0.4rem 0.85rem;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.15s;
+            white-space: nowrap;
+        }
+
+        .section-nav-btn:hover {
+            background: var(--accent-light);
+            color: var(--accent);
+        }
+
+        .section-nav-btn.active {
+            background: var(--accent-light);
+            color: var(--accent);
+        }
+
+        [data-theme="dark"] .section-nav-btn:hover,
+        [data-theme="dark"] .section-nav-btn.active {
+            background: rgba(99, 102, 241, 0.15);
+            color: #818cf8;
+        }
+
+        @media (max-width: 767px) {
+            .section-nav {
+                margin-left: 0;
+                margin-top: 0.5rem;
+            }
+
+            .app-bar-inner {
+                flex-wrap: wrap;
+            }
+
+            .app-bar-brand {
+                flex-basis: 100%;
+            }
+        }
+
+        /* ═══════════════════════════════════════════════
+       SECTION SWITCHING (fade transitions)
+       ═══════════════════════════════════════════════ */
+        .app-container,
+        .section-divider,
+        .invest-section {
+            transition: opacity 0.35s ease, visibility 0.35s ease;
+        }
+
+        .section-hidden {
+            opacity: 0;
+            visibility: hidden;
+            position: absolute;
+            pointer-events: none;
+            height: 0;
+            overflow: hidden;
+        }
+
+        .section-visible {
+            opacity: 1;
+            visibility: visible;
+            position: relative;
+            pointer-events: auto;
+            height: auto;
+            overflow: visible;
+        }
+
+        .section-fading-out {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .section-fading-in {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* ═══════════════════════════════════════════════
+       INVESTMENT SECTION
+       ═══════════════════════════════════════════════ */
+        .section-divider {
+            width: 95vw;
+            max-width: 1600px;
+            margin: 6rem auto 0;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .section-divider::before,
+        .section-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        .divider-ornament {
+            color: var(--border);
+            font-size: 0.75rem;
+        }
+
+        .invest-section {
+            width: 95vw;
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 0 1.6rem 6rem;
+        }
+
+        .invest-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.6rem;
+        }
+
+        .invest-header {
+            text-align: center;
+            padding: 3rem 0 1rem;
+        }
+
+        .invest-title {
+            font-size: var(--text-2xl);
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+
+        .invest-subtitle {
+            font-size: var(--text-base);
+            color: var(--text-secondary);
+        }
+
+        /* Input Bar */
+        .invest-input-bar {
+            padding: 2rem;
+        }
+
+        .invest-inputs-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 1.6rem;
+        }
+
+        .invest-hint {
+            font-size: var(--text-sm);
+            color: var(--accent);
+            margin-top: 0.25rem;
+            cursor: pointer;
+        }
+
+        .invest-funds-row {
+            margin-bottom: 1rem;
+        }
+
+        .invest-funds-label {
+            font-size: var(--text-sm);
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .invest-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .invest-pill {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.4rem 0.85rem;
+            border-radius: 999px;
+            border: 1.5px solid var(--border);
+            font-size: var(--text-sm);
+            font-weight: 600;
+            cursor: pointer;
+            background: transparent;
+            color: var(--text);
+            transition: all 0.15s;
+            font-family: inherit;
+        }
+
+        .invest-pill:hover {
+            border-color: var(--text-secondary);
+        }
+
+        .invest-pill .pill-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .invest-pill.active {
+            color: white;
+            border-color: transparent;
+        }
+
+        .invest-nominal-note {
+            font-size: var(--text-sm);
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        /* Banner */
+        .invest-banner {
+            border-left: 4px solid var(--invest-stock);
+            padding: 1.5rem 2rem;
+        }
+
+        .invest-banner-eyebrow {
+            font-size: var(--text-sm);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+            margin-bottom: 0.25rem;
+        }
+
+        .invest-banner-hero {
+            display: flex;
+            align-items: baseline;
+            gap: 0.75rem;
+            margin-bottom: 0.25rem;
+            flex-wrap: wrap;
+        }
+
+        .invest-banner-amount {
+            font-size: var(--text-2xl);
+            font-weight: 800;
+            letter-spacing: -1px;
+        }
+
+        .invest-banner-after {
+            font-size: var(--text-lg);
+            font-weight: 400;
+            color: var(--text-secondary);
+        }
+
+        .invest-banner-fund {
+            font-size: var(--text-base);
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .invest-banner-detail {
+            font-size: var(--text-sm);
+            color: var(--text-secondary);
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .invest-banner-dot {
+            color: var(--border);
+        }
+
+        .invest-banner-comparison {
+            font-size: var(--text-sm);
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+        }
+
+        /* Disclaimer */
+        .invest-disclaimer {
+            font-size: var(--text-sm);
+            color: var(--text-secondary);
+            line-height: 1.4;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.4rem;
+        }
+
+        .invest-disclaimer-icon {
+            flex-shrink: 0;
+        }
+
+        /* Stat Cards */
+        .invest-stat-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .invest-stat-card {
+            padding: 1.25rem 1.5rem;
+        }
+
+        .stat-card-label {
+            font-size: var(--text-sm);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card-hero {
+            font-size: var(--text-xl);
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            margin-bottom: 0.15rem;
+        }
+
+        .stat-card-sub {
+            font-size: var(--text-sm);
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card-detail {
+            font-size: var(--text-sm);
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .invest-stat-multiple {
+            font-size: var(--text-2xl);
+            font-weight: 800;
+        }
+
+        /* Chart Card */
+        .invest-chart-card {
+            padding: 2rem;
+        }
+
+        .invest-chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .invest-chart-title {
+            font-size: var(--text-lg);
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .invest-chart-sub {
+            font-size: var(--text-sm);
+            color: var(--text-secondary);
+        }
+
+        .invest-info-btn {
+            background: none;
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            width: 2rem;
+            height: 2rem;
+            font-size: 0.875rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            transition: all 0.15s;
+            flex-shrink: 0;
+        }
+
+        .invest-info-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .invest-popover {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-md);
+            padding: 1rem 1.25rem;
+            max-width: 360px;
+            font-size: var(--text-sm);
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
+
+        .invest-chart-wrapper {
+            position: relative;
+            height: 400px;
+            min-height: 300px;
+        }
+
+        /* Data Table */
+        .invest-table-section {
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+
+        .invest-table-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            padding: 1rem 1.5rem;
+            background: var(--surface);
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: var(--text-base);
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .invest-table-toggle .chevron {
+            transition: transform 0.25s ease;
+            font-size: var(--text-sm);
+            color: var(--text-secondary);
+        }
+
+        .invest-table-toggle.open .chevron {
+            transform: rotate(180deg);
+        }
+
+        .invest-table-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.35s ease;
+        }
+
+        .invest-table-body.open {
+            max-height: 200rem;
+        }
+
+        .invest-data-table .contrib-col {
+            background: rgba(0, 0, 0, 0.02);
+        }
+
+        [data-theme="dark"] .invest-data-table .contrib-col {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .invest-data-table .final-row {
+            background: var(--green-bg);
+            font-weight: 600;
+        }
+
+        /* Fee Card */
+        .invest-fee-card {
+            border-left: 3px solid var(--accent);
+            padding: 1.25rem 1.5rem;
+        }
+
+        .fee-card-header {
+            font-size: var(--text-sm);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .fee-card-body {
+            font-size: var(--text-base);
+            line-height: 1.5;
+        }
+
+        .fee-card-amount {
+            font-weight: 700;
+        }
+
+        .fee-savings-callout {
+            background: var(--green-bg);
+            border: 1px solid var(--green-border);
+            border-radius: var(--radius-sm);
+            padding: 0.75rem 1rem;
+            margin-top: 0.75rem;
+            font-size: var(--text-sm);
+            color: var(--green);
+        }
+
+        /* Advanced panel for invest section */
+        .invest-advanced-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.35s ease;
+        }
+
+        .invest-advanced-body.open {
+            max-height: 200rem;
+        }
+
+        .invest-fund-group {
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 1rem 1.25rem;
+            margin-bottom: 1rem;
+        }
+
+        .invest-fund-group-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .invest-fund-group-name {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .invest-net-return-badge {
+            font-size: var(--text-sm);
+            font-weight: 600;
+            padding: 0.15rem 0.5rem;
+            border-radius: var(--radius-sm);
+            background: var(--accent-light);
+            color: var(--accent);
+        }
+
+        .invest-contrib-section {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .invest-contrib-hint {
+            font-size: var(--text-sm);
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        .invest-reset-btn {
+            background: none;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 0.5rem 1rem;
+            font-family: inherit;
+            font-size: var(--text-sm);
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.15s;
+            margin-top: 0.5rem;
+        }
+
+        .invest-reset-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        /* Invest section empty state */
+        .invest-empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-secondary);
+            font-size: var(--text-base);
+        }
+
+        /* Responsive */
+        @media (max-width: 1023px) {
+            .invest-inputs-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 767px) {
+            .invest-inputs-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .invest-stat-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .invest-stat-card--returns {
+                order: -1;
+            }
+
+            .invest-banner-hero {
+                flex-direction: column;
+                gap: 0.25rem;
+            }
+
+            .invest-chart-wrapper {
+                height: 300px;
+                min-height: 250px;
+            }
+        }
     </style>
 </head>
 
@@ -1283,6 +1903,10 @@
                 <span class="app-bar-divider"></span>
                 <p>Where should the money go?</p>
             </div>
+            <nav class="section-nav" id="sectionNav">
+                <button class="section-nav-btn active" data-section="mortgage-calculator">Mortgage vs. Invest</button>
+                <button class="section-nav-btn" data-section="investment-calculator">Compound Calculator</button>
+            </nav>
             <div class="app-bar-utils">
                 <button class="theme-toggle" id="themeToggle" aria-label="Toggle Dark Mode">🌙</button>
             </div>
@@ -1290,7 +1914,7 @@
     </header>
 
     <!-- ═══════════════ MAIN LAYOUT ═══════════════ -->
-    <div class="app-container">
+    <div class="app-container" id="mortgage-calculator">
 
         <!-- ─── LEFT: INPUTS ─── -->
         <aside class="inputs-panel card" id="inputs-panel">
@@ -1695,6 +2319,161 @@
 
         </main>
     </div>
+
+    <!-- ═══════════════════════════════════════════════
+         INVESTMENT GROWTH CALCULATOR SECTION
+         ═══════════════════════════════════════════════ -->
+    <div class="section-divider" aria-hidden="true">
+        <span class="divider-ornament">◆</span>
+    </div>
+
+    <section id="investment-calculator" class="invest-section">
+        <div class="invest-container">
+            <header class="invest-header">
+                <h2 class="invest-title">Investment Growth Calculator</h2>
+                <p class="invest-subtitle">How does your money grow over time across different fund types?</p>
+            </header>
+
+            <!-- Summary Banner -->
+            <div class="invest-banner card" id="invest-banner">
+                <div class="invest-banner-eyebrow">Projected Portfolio Value</div>
+                <div class="invest-banner-hero">
+                    <span class="invest-banner-amount" id="invest-banner-amount">$723,441</span>
+                    <span class="invest-banner-after">after <span id="invest-banner-years">25</span> years</span>
+                </div>
+                <div class="invest-banner-fund" id="invest-banner-fund">in Total US Stock Market</div>
+                <div class="invest-banner-detail">
+                    <span id="invest-banner-gains">$563,441 in estimated gains</span>
+                    <span class="invest-banner-dot">&middot;</span>
+                    <span id="invest-banner-contribs">$160,000 contributed</span>
+                </div>
+                <div class="invest-banner-comparison" id="invest-banner-comparison"></div>
+            </div>
+
+            <!-- Disclaimer -->
+            <p class="invest-disclaimer" id="invest-disclaimer">
+                <span class="invest-disclaimer-icon">ⓘ</span>
+                Projections use historical averages and do not guarantee future results.
+                Actual returns vary year to year, including negative years. Not financial advice.
+            </p>
+
+            <!-- Input Bar -->
+            <div class="invest-input-bar card">
+                <!-- Row 1: 3 sliders -->
+                <div class="invest-inputs-grid">
+                    <div class="input-group">
+                        <label for="invest-initial">Initial Investment</label>
+                        <div class="input-row">
+                            <span class="unit">$</span>
+                            <input type="number" id="invest-initial-num" value="10000" min="0" max="1000000" step="500">
+                        </div>
+                        <input type="range" id="invest-initial" min="0" max="1000000" step="500" value="10000">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="invest-monthly">Monthly Contribution</label>
+                        <div class="input-row">
+                            <span class="unit">$</span>
+                            <input type="number" id="invest-monthly-num" value="500" min="0" max="10000" step="50">
+                        </div>
+                        <input type="range" id="invest-monthly" min="0" max="10000" step="50" value="500">
+                        <p class="invest-hint" id="invest-hint-escalate">Tip: Many people increase contributions yearly →</p>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="invest-years">Time Horizon</label>
+                        <div class="input-row">
+                            <input type="number" id="invest-years-num" value="25" min="1" max="50" step="1">
+                            <span class="unit">yrs</span>
+                        </div>
+                        <input type="range" id="invest-years" min="1" max="50" step="1" value="25">
+                    </div>
+                </div>
+
+                <!-- Row 2: Fund pills -->
+                <div class="invest-funds-row">
+                    <span class="invest-funds-label">Fund Types</span>
+                    <div class="invest-pills" id="invest-pills">
+                        <!-- Pills generated by JS from FUND_CONFIG -->
+                    </div>
+                    <p class="invest-nominal-note">Returns shown are nominal (not adjusted for inflation)</p>
+                </div>
+
+                <!-- Row 3: Customize toggle -->
+                <div class="advanced-toggle" id="invest-advanced-toggle">
+                    <span>⚙ Customize Assumptions — adjust returns, fees, and contribution growth</span>
+                    <span class="chevron">▾</span>
+                </div>
+                <div class="invest-advanced-body" id="invest-advanced-body">
+                    <!-- Generated by JS based on selected funds -->
+                </div>
+            </div>
+
+            <!-- Fee Card (visible only when Advanced is open) -->
+            <div class="card invest-fee-card" id="invest-fee-card" hidden>
+                <div class="fee-card-header">💡 Fee Impact</div>
+                <div class="fee-card-body" id="invest-fee-body"></div>
+            </div>
+
+            <!-- Stat Cards -->
+            <div class="invest-stat-cards">
+                <div class="card invest-stat-card">
+                    <div class="stat-card-label">What You Put In</div>
+                    <div class="stat-card-hero" id="invest-stat-contribs">$160,000</div>
+                    <div class="stat-card-sub">total contributed</div>
+                    <div class="stat-card-detail">
+                        <div id="invest-stat-initial-line"></div>
+                        <div id="invest-stat-monthly-line"></div>
+                    </div>
+                </div>
+                <div class="card invest-stat-card invest-stat-card--returns">
+                    <div class="stat-card-label" id="invest-stat-returns-label">Projected Returns — <span id="invest-stat-fund-name">Total US Stock Market</span></div>
+                    <div class="stat-card-hero invest-stat-multiple" id="invest-stat-multiple">4.5×</div>
+                    <div class="stat-card-sub">growth multiple</div>
+                    <div class="stat-card-detail">
+                        <div id="invest-stat-fv-line"></div>
+                        <div id="invest-stat-gains-line"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chart -->
+            <div class="card invest-chart-card">
+                <div class="invest-chart-header">
+                    <div>
+                        <h3 class="invest-chart-title">Investment Growth Over Time</h3>
+                        <p class="invest-chart-sub">Projected values based on historical average annual returns</p>
+                    </div>
+                    <button class="invest-info-btn" id="invest-info-btn" aria-label="About these projections">ℹ️</button>
+                </div>
+
+                <!-- Info popover -->
+                <div class="invest-popover" id="invest-popover" hidden>
+                    <p>This chart shows projected growth based on historical average annual returns. Actual year-to-year returns vary significantly — including negative years. Historically, longer time horizons have reduced the impact of short-term volatility.</p>
+                    <p style="margin-top:0.5rem">Returns shown are nominal (not adjusted for inflation).</p>
+                </div>
+
+                <div class="invest-chart-wrapper">
+                    <canvas id="investChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Data Table -->
+            <div class="invest-table-section">
+                <button class="invest-table-toggle" id="invest-table-toggle" aria-expanded="false">
+                    <span>Show Year-by-Year Breakdown</span>
+                    <span class="chevron">▾</span>
+                </button>
+                <div class="invest-table-body" id="invest-table-body">
+                    <div class="data-table-wrap">
+                        <table class="data-table invest-data-table" id="invest-data-table">
+                            <!-- Generated by JS -->
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <footer class="footer">
         This calculator is for educational purposes only. Past market performance does not guarantee future results.
@@ -2347,11 +3126,912 @@
         }
 
         // ═══════════════════════════════════════════════
+        // INVESTMENT GROWTH CALCULATOR
+        // ═══════════════════════════════════════════════
+
+        const FUND_CONFIG = {
+            stock: {
+                id: 'stock',
+                label: 'Total US Stock Market',
+                ticker: 'e.g. VTSAX / VTI',
+                grossReturn: 0.102,
+                expenseRatio: 0.0003,
+                color: '--invest-stock',
+                defaultOn: true,
+            },
+            sp500: {
+                id: 'sp500',
+                label: 'S&P 500 Index',
+                ticker: 'e.g. VOO / FXAIX',
+                grossReturn: 0.100,
+                expenseRatio: 0.0003,
+                color: '--invest-sp500',
+                defaultOn: false,
+            },
+            intl: {
+                id: 'intl',
+                label: 'International Developed',
+                ticker: 'e.g. VXUS / FZILX',
+                grossReturn: 0.058,
+                expenseRatio: 0.0006,
+                color: '--invest-intl',
+                defaultOn: false,
+            },
+            bonds: {
+                id: 'bonds',
+                label: 'US Bond Market',
+                ticker: 'e.g. BND / VBTLX',
+                grossReturn: 0.045,
+                expenseRatio: 0.0003,
+                color: '--invest-bonds',
+                defaultOn: true,
+            },
+            target: {
+                id: 'target',
+                label: 'Target Date 2050',
+                ticker: 'e.g. VFIFX',
+                grossReturn: 0.082,
+                expenseRatio: 0.0012,
+                color: '--invest-target',
+                defaultOn: false,
+            },
+            hysa: {
+                id: 'hysa',
+                label: 'High-Yield Savings',
+                ticker: 'e.g. Marcus, SoFi',
+                grossReturn: 0.045,
+                expenseRatio: null,
+                color: '--invest-hysa',
+                defaultOn: true,
+            },
+        };
+
+        // Investment calculator state
+        let investSelectedFunds = Object.keys(FUND_CONFIG).filter(id => FUND_CONFIG[id].defaultOn);
+        let investCustomRates = {};
+        let investAnnualContribIncrease = 0;
+        let investChart = null;
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        // ── Utility Functions ──
+        function getCssVar(name) {
+            return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+        }
+
+        function hexToRgba(hex, alpha) {
+            const h = hex.replace('#', '');
+            if (h.length < 6) return `rgba(0,0,0,${alpha})`;
+            const r = parseInt(h.substring(0, 2), 16);
+            const g = parseInt(h.substring(2, 4), 16);
+            const b = parseInt(h.substring(4, 6), 16);
+            return `rgba(${r},${g},${b},${alpha})`;
+        }
+
+        function formatCurrency(value) {
+            return '$' + Math.round(value).toLocaleString('en-US');
+        }
+
+        function formatCurrencyShort(value) {
+            if (value >= 1_000_000) return '$' + (value / 1_000_000).toFixed(1) + 'M';
+            if (value >= 1_000) return '$' + Math.round(value / 1_000) + 'K';
+            return '$' + Math.round(value);
+        }
+
+        function debounce(fn, ms) {
+            let timer;
+            return function (...args) {
+                clearTimeout(timer);
+                timer = setTimeout(() => fn.apply(this, args), ms);
+            };
+        }
+
+        function animateValue(el, start, end, duration, formatter) {
+            if (prefersReducedMotion || duration === 0) {
+                el.textContent = formatter ? formatter(end) : end;
+                return;
+            }
+            const startTime = performance.now();
+            function tick(now) {
+                const elapsed = now - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+                const current = start + (end - start) * eased;
+                el.textContent = formatter ? formatter(current) : Math.round(current);
+                if (progress < 1) requestAnimationFrame(tick);
+            }
+            requestAnimationFrame(tick);
+        }
+
+        // ── Calculation Engine ──
+        function getNetReturn(fund, customRates) {
+            const rate = customRates?.[fund.id]?.rate ?? fund.grossReturn;
+            const er = customRates?.[fund.id]?.er ?? (fund.expenseRatio ?? 0);
+            return rate - er;
+        }
+
+        function projectYearly(initialInvestment, monthlyContrib, years, annualNetReturn) {
+            const r = annualNetReturn / 12;
+            const results = [initialInvestment];
+            for (let y = 1; y <= years; y++) {
+                const n = y * 12;
+                let fv;
+                if (r === 0) {
+                    fv = initialInvestment + monthlyContrib * n;
+                } else {
+                    const growth = Math.pow(1 + r, n);
+                    fv = initialInvestment * growth + monthlyContrib * ((growth - 1) / r);
+                }
+                results.push(fv);
+            }
+            return results;
+        }
+
+        function projectYearlyEscalating(initialInvestment, monthlyContrib, years, annualNetReturn, annualContribIncrease) {
+            const r = annualNetReturn / 12;
+            let portfolioValue = initialInvestment;
+            const results = [initialInvestment];
+            for (let y = 1; y <= years; y++) {
+                const effectiveMonthly = monthlyContrib * Math.pow(1 + annualContribIncrease, y - 1);
+                for (let m = 0; m < 12; m++) {
+                    portfolioValue = portfolioValue * (1 + r) + effectiveMonthly;
+                }
+                results.push(portfolioValue);
+            }
+            return results;
+        }
+
+        function contributionsYearly(initialInvestment, monthlyContrib, years, annualContribIncrease = 0) {
+            const results = [initialInvestment];
+            let cumulative = initialInvestment;
+            for (let y = 1; y <= years; y++) {
+                const effectiveMonthly = monthlyContrib * Math.pow(1 + annualContribIncrease, y - 1);
+                cumulative += effectiveMonthly * 12;
+                results.push(cumulative);
+            }
+            return results;
+        }
+
+        function computeInvestment(inputs, customRates) {
+            const { initialInvestment, monthlyContrib, years, annualContribIncrease, selectedFunds } = inputs;
+            const useEscalating = annualContribIncrease > 0;
+            const contribs = contributionsYearly(initialInvestment, monthlyContrib, years, annualContribIncrease);
+
+            const projections = {};
+            for (const fundId of selectedFunds) {
+                const fund = FUND_CONFIG[fundId];
+                const netReturn = getNetReturn(fund, customRates);
+                projections[fundId] = useEscalating
+                    ? projectYearlyEscalating(initialInvestment, monthlyContrib, years, netReturn, annualContribIncrease)
+                    : projectYearly(initialInvestment, monthlyContrib, years, netReturn);
+            }
+
+            let leadingFundId = selectedFunds[0];
+            for (const fundId of selectedFunds) {
+                if (projections[fundId]?.[years] > (projections[leadingFundId]?.[years] ?? 0)) {
+                    leadingFundId = fundId;
+                }
+            }
+
+            const leadingFinalValue = projections[leadingFundId]?.[years] ?? 0;
+            const totalContributions = contribs[years];
+            const totalGains = leadingFinalValue - totalContributions;
+            const growthMultiple = totalContributions > 0 ? leadingFinalValue / totalContributions : 0;
+
+            return { projections, contribs, leadingFundId, leadingFinalValue, totalContributions, totalGains, growthMultiple };
+        }
+
+        // ── Read Inputs ──
+        function readInvestInputs() {
+            return {
+                initialInvestment: parseFloat(document.getElementById('invest-initial-num').value) || 0,
+                monthlyContrib: parseFloat(document.getElementById('invest-monthly-num').value) || 0,
+                years: parseInt(document.getElementById('invest-years-num').value) || 25,
+                annualContribIncrease: investAnnualContribIncrease,
+                selectedFunds: investSelectedFunds,
+            };
+        }
+
+        // ── Fund Pills ──
+        function renderFundPills(selectedFunds) {
+            const container = document.getElementById('invest-pills');
+            container.innerHTML = '';
+            for (const [id, fund] of Object.entries(FUND_CONFIG)) {
+                const isActive = selectedFunds.includes(id);
+                const color = getCssVar(fund.color);
+
+                const btn = document.createElement('button');
+                btn.className = 'invest-pill' + (isActive ? ' active' : '');
+                btn.dataset.fundId = id;
+                if (isActive) {
+                    btn.style.backgroundColor = color;
+                    btn.style.borderColor = color;
+                }
+
+                const dot = document.createElement('span');
+                dot.className = 'pill-dot';
+                dot.style.backgroundColor = color;
+                if (isActive) dot.style.backgroundColor = 'rgba(255,255,255,0.8)';
+
+                btn.appendChild(dot);
+                btn.appendChild(document.createTextNode(fund.label));
+                btn.addEventListener('click', () => toggleFund(id));
+                container.appendChild(btn);
+            }
+        }
+
+        function toggleFund(fundId) {
+            const idx = investSelectedFunds.indexOf(fundId);
+            if (idx >= 0) {
+                investSelectedFunds.splice(idx, 1);
+            } else {
+                investSelectedFunds.push(fundId);
+            }
+            renderFundPills(investSelectedFunds);
+            renderAdvancedPanel();
+            updateInvestment();
+        }
+
+        // ── Advanced Panel ──
+        function renderAdvancedPanel() {
+            const body = document.getElementById('invest-advanced-body');
+            let html = '';
+
+            // Contribution increase section
+            html += `<div class="invest-contrib-section">
+                <div class="input-group" style="margin-bottom:0.5rem;">
+                    <label>Annual Contribution Increase</label>
+                    <div class="input-row">
+                        <input type="number" id="invest-contrib-increase-num" value="${(investAnnualContribIncrease * 100).toFixed(1)}" min="0" max="15" step="0.5" style="width:5rem;">
+                        <span class="unit">%</span>
+                    </div>
+                    <input type="range" id="invest-contrib-increase" min="0" max="15" step="0.5" value="${(investAnnualContribIncrease * 100).toFixed(1)}">
+                    <p class="invest-contrib-hint">ⓘ How much you increase contributions each year (salary growth)</p>
+                </div>
+            </div>`;
+
+            // Per-fund sliders
+            if (investSelectedFunds.length > 0) {
+                html += '<div style="font-size:var(--text-sm);font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.75rem;">Fund Assumptions</div>';
+            }
+
+            for (const fundId of investSelectedFunds) {
+                const fund = FUND_CONFIG[fundId];
+                const customRate = investCustomRates[fundId]?.rate ?? fund.grossReturn;
+                const customER = investCustomRates[fundId]?.er ?? (fund.expenseRatio ?? 0);
+                const netReturn = customRate - customER;
+                const color = getCssVar(fund.color);
+
+                html += `<div class="invest-fund-group">
+                    <div class="invest-fund-group-header">
+                        <span class="invest-fund-group-name">
+                            <span class="pill-dot" style="background:${color};width:10px;height:10px;border-radius:50%;display:inline-block;"></span>
+                            ${fund.label}
+                        </span>
+                        <span class="invest-net-return-badge" id="invest-net-${fundId}">Net Return: ${fund.expenseRatio !== null ? (netReturn * 100).toFixed(2) : (customRate * 100).toFixed(2)}%</span>
+                    </div>
+                    <div class="input-group" style="margin-bottom:0.75rem;">
+                        <label>Annual Return</label>
+                        <div class="input-row">
+                            <input type="number" id="invest-rate-${fundId}-num" value="${(customRate * 100).toFixed(1)}" min="0" max="20" step="0.1" style="width:5rem;" data-fund="${fundId}" data-field="rate">
+                            <span class="unit">%</span>
+                        </div>
+                        <input type="range" id="invest-rate-${fundId}" min="0" max="20" step="0.1" value="${(customRate * 100).toFixed(1)}" data-fund="${fundId}" data-field="rate">
+                    </div>
+                    <div class="input-group" style="margin-bottom:0;">
+                        <label>Expense Ratio</label>
+                        ${fund.expenseRatio !== null ? `
+                        <div class="input-row">
+                            <input type="number" id="invest-er-${fundId}-num" value="${(customER * 100).toFixed(2)}" min="0" max="3" step="0.01" style="width:5rem;" data-fund="${fundId}" data-field="er">
+                            <span class="unit">%</span>
+                        </div>
+                        <input type="range" id="invest-er-${fundId}" min="0" max="3" step="0.01" value="${(customER * 100).toFixed(2)}" data-fund="${fundId}" data-field="er">
+                        ` : `<div style="font-size:var(--text-sm);color:var(--text-secondary);padding:0.4rem 0;">N/A — savings accounts don't have expense ratios</div>`}
+                    </div>
+                </div>`;
+            }
+
+            html += `<button class="invest-reset-btn" id="invest-reset-btn">Reset to Defaults</button>`;
+            body.innerHTML = html;
+
+            // Wire up advanced panel events
+            wireAdvancedEvents();
+        }
+
+        function wireAdvancedEvents() {
+            // Contribution increase
+            const contribNum = document.getElementById('invest-contrib-increase-num');
+            const contribSlider = document.getElementById('invest-contrib-increase');
+            if (contribNum && contribSlider) {
+                contribNum.addEventListener('input', () => {
+                    contribSlider.value = contribNum.value;
+                    investAnnualContribIncrease = parseFloat(contribNum.value) / 100 || 0;
+                    updateInvestment();
+                });
+                contribSlider.addEventListener('input', () => {
+                    contribNum.value = contribSlider.value;
+                    investAnnualContribIncrease = parseFloat(contribSlider.value) / 100 || 0;
+                    updateInvestment();
+                });
+            }
+
+            // Per-fund rate/ER sliders
+            for (const fundId of investSelectedFunds) {
+                const fund = FUND_CONFIG[fundId];
+                // Rate
+                const rateNum = document.getElementById(`invest-rate-${fundId}-num`);
+                const rateSlider = document.getElementById(`invest-rate-${fundId}`);
+                if (rateNum && rateSlider) {
+                    rateNum.addEventListener('input', () => {
+                        rateSlider.value = rateNum.value;
+                        if (!investCustomRates[fundId]) investCustomRates[fundId] = {};
+                        investCustomRates[fundId].rate = parseFloat(rateNum.value) / 100 || 0;
+                        updateNetReturnBadge(fundId);
+                        updateInvestment();
+                    });
+                    rateSlider.addEventListener('input', () => {
+                        rateNum.value = rateSlider.value;
+                        if (!investCustomRates[fundId]) investCustomRates[fundId] = {};
+                        investCustomRates[fundId].rate = parseFloat(rateSlider.value) / 100 || 0;
+                        updateNetReturnBadge(fundId);
+                        updateInvestment();
+                    });
+                }
+                // ER
+                if (fund.expenseRatio !== null) {
+                    const erNum = document.getElementById(`invest-er-${fundId}-num`);
+                    const erSlider = document.getElementById(`invest-er-${fundId}`);
+                    if (erNum && erSlider) {
+                        erNum.addEventListener('input', () => {
+                            erSlider.value = erNum.value;
+                            if (!investCustomRates[fundId]) investCustomRates[fundId] = {};
+                            investCustomRates[fundId].er = parseFloat(erNum.value) / 100 || 0;
+                            updateNetReturnBadge(fundId);
+                            updateInvestment();
+                        });
+                        erSlider.addEventListener('input', () => {
+                            erNum.value = erSlider.value;
+                            if (!investCustomRates[fundId]) investCustomRates[fundId] = {};
+                            investCustomRates[fundId].er = parseFloat(erSlider.value) / 100 || 0;
+                            updateNetReturnBadge(fundId);
+                            updateInvestment();
+                        });
+                    }
+                }
+            }
+
+            // Reset button
+            const resetBtn = document.getElementById('invest-reset-btn');
+            if (resetBtn) {
+                resetBtn.addEventListener('click', () => {
+                    investCustomRates = {};
+                    investAnnualContribIncrease = 0;
+                    renderAdvancedPanel();
+                    updateInvestment();
+                });
+            }
+        }
+
+        function updateNetReturnBadge(fundId) {
+            const fund = FUND_CONFIG[fundId];
+            const badge = document.getElementById(`invest-net-${fundId}`);
+            if (!badge) return;
+            const rate = investCustomRates[fundId]?.rate ?? fund.grossReturn;
+            const er = investCustomRates[fundId]?.er ?? (fund.expenseRatio ?? 0);
+            if (fund.expenseRatio !== null) {
+                badge.textContent = `Net Return: ${((rate - er) * 100).toFixed(2)}%`;
+            } else {
+                badge.textContent = `Rate: ${(rate * 100).toFixed(2)}%`;
+            }
+        }
+
+        // ── Banner Update ──
+        let lastBannerAmount = 0;
+        let lastStatContribs = 0;
+        let lastStatMultiple = 0;
+
+        function updateInvestBanner(result, inputs) {
+            const { leadingFundId, leadingFinalValue, totalContributions, totalGains, growthMultiple } = result;
+            const { years, selectedFunds } = inputs;
+
+            const bannerEl = document.getElementById('invest-banner');
+            const amountEl = document.getElementById('invest-banner-amount');
+            const yearsEl = document.getElementById('invest-banner-years');
+            const fundEl = document.getElementById('invest-banner-fund');
+            const gainsEl = document.getElementById('invest-banner-gains');
+            const contribsEl = document.getElementById('invest-banner-contribs');
+            const comparisonEl = document.getElementById('invest-banner-comparison');
+
+            // Edge: no funds or no money
+            if (selectedFunds.length === 0) {
+                amountEl.textContent = '—';
+                fundEl.textContent = 'Select a fund type above to see projected growth.';
+                gainsEl.textContent = '';
+                contribsEl.textContent = '';
+                comparisonEl.textContent = '';
+                bannerEl.style.borderLeftColor = getCssVar('--border');
+                yearsEl.textContent = years;
+                return;
+            }
+
+            if (inputs.initialInvestment === 0 && inputs.monthlyContrib === 0) {
+                amountEl.textContent = '$0';
+                fundEl.textContent = 'Enter an investment amount to see projections.';
+                gainsEl.textContent = '';
+                contribsEl.textContent = '';
+                comparisonEl.textContent = '';
+                bannerEl.style.borderLeftColor = getCssVar('--border');
+                yearsEl.textContent = years;
+                return;
+            }
+
+            const fund = FUND_CONFIG[leadingFundId];
+            const color = getCssVar(fund.color);
+            bannerEl.style.borderLeftColor = color;
+
+            yearsEl.textContent = years;
+            fundEl.textContent = `in ${fund.label}`;
+            fundEl.style.color = color;
+            gainsEl.textContent = `${formatCurrency(totalGains)} in estimated gains`;
+            contribsEl.textContent = `${formatCurrency(totalContributions)} contributed`;
+
+            // Animate banner amount
+            animateValue(amountEl, lastBannerAmount, leadingFinalValue, 400, formatCurrency);
+            lastBannerAmount = leadingFinalValue;
+
+            // HYSA comparison
+            if (selectedFunds.includes('hysa') && leadingFundId !== 'hysa' && result.projections.hysa) {
+                const hysaFinal = result.projections.hysa[years];
+                comparisonEl.textContent = `vs. ${formatCurrency(hysaFinal)} projected in High-Yield Savings`;
+            } else {
+                comparisonEl.textContent = '';
+            }
+        }
+
+        // ── Stat Cards Update ──
+        function updateInvestStatCards(result, inputs) {
+            const { leadingFundId, leadingFinalValue, totalContributions, totalGains, growthMultiple } = result;
+            const { selectedFunds, initialInvestment, monthlyContrib, years, annualContribIncrease } = inputs;
+
+            const contribsEl = document.getElementById('invest-stat-contribs');
+            const multipleEl = document.getElementById('invest-stat-multiple');
+            const fundNameEl = document.getElementById('invest-stat-fund-name');
+            const initialLineEl = document.getElementById('invest-stat-initial-line');
+            const monthlyLineEl = document.getElementById('invest-stat-monthly-line');
+            const fvLineEl = document.getElementById('invest-stat-fv-line');
+            const gainsLineEl = document.getElementById('invest-stat-gains-line');
+
+            // Contributions card
+            animateValue(contribsEl, lastStatContribs, totalContributions, 300, formatCurrency);
+            lastStatContribs = totalContributions;
+
+            initialLineEl.textContent = `${formatCurrency(initialInvestment)} initial`;
+            if (annualContribIncrease > 0) {
+                monthlyLineEl.textContent = `escalating from ${formatCurrency(monthlyContrib)}/mo (+${(annualContribIncrease * 100).toFixed(0)}%/yr)`;
+            } else {
+                monthlyLineEl.textContent = `+ ${formatCurrency(monthlyContrib)}/mo × ${years} years`;
+            }
+
+            // Returns card
+            if (selectedFunds.length === 0) {
+                multipleEl.textContent = '—';
+                fundNameEl.textContent = '';
+                fvLineEl.textContent = '';
+                gainsLineEl.textContent = '';
+                multipleEl.style.color = '';
+                return;
+            }
+
+            const fund = FUND_CONFIG[leadingFundId];
+            const color = getCssVar(fund.color);
+            fundNameEl.textContent = fund.label;
+            multipleEl.style.color = color;
+
+            const multipleVal = growthMultiple;
+            animateValue(multipleEl, lastStatMultiple, multipleVal, 300, (v) => v.toFixed(1) + '×');
+            lastStatMultiple = multipleVal;
+
+            fvLineEl.textContent = `${formatCurrency(leadingFinalValue)} projected value`;
+            gainsLineEl.textContent = `${formatCurrency(totalGains)} estimated gains`;
+        }
+
+        // ── Chart ──
+        function initInvestChart() {
+            const ctx = document.getElementById('investChart').getContext('2d');
+            investChart = new Chart(ctx, {
+                type: 'line',
+                data: { labels: [], datasets: [] },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: {
+                        duration: 800,
+                        easing: 'easeInOutQuart',
+                    },
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 16,
+                                font: { family: 'Inter', size: 13 },
+                                filter: (legendItem) => {
+                                    // Hide contributions from legend click (still visible)
+                                    return true;
+                                },
+                            },
+                            onClick: (e, legendItem, legend) => {
+                                // Prevent toggling the contributions line
+                                if (legendItem.datasetIndex === 0) return;
+                                Chart.defaults.plugins.legend.onClick.call(legend, e, legendItem, legend);
+                            },
+                        },
+                        tooltip: {
+                            backgroundColor: htmlEl.getAttribute('data-theme') === 'dark' ? '#374151' : '#1a1d23',
+                            titleFont: { family: 'Inter', weight: '600' },
+                            bodyFont: { family: 'Inter', size: 13 },
+                            padding: 12,
+                            cornerRadius: 8,
+                            callbacks: {
+                                title: (items) => `Year ${items[0].label}`,
+                                label: (item) => {
+                                    if (item.dataset.isContributions) {
+                                        return ` Contributions: ${formatCurrency(item.raw)}`;
+                                    }
+                                    return ` ${item.dataset.label}: ${formatCurrency(item.raw)}`;
+                                },
+                                afterBody: (items) => {
+                                    const contribItem = items.find(i => i.dataset.isContributions);
+                                    if (!contribItem) return [];
+                                    const contribValue = contribItem.raw;
+                                    return items
+                                        .filter(i => !i.dataset.isContributions)
+                                        .map(i => `  Gains (${i.dataset.label}): ${formatCurrency(i.raw - contribValue)}`);
+                                },
+                            },
+                        },
+                    },
+                    scales: {
+                        x: {
+                            title: { display: true, text: 'Year', font: { family: 'Inter', size: 12, weight: '500' }, color: getCssVar('--text-secondary') },
+                            grid: { color: htmlEl.getAttribute('data-theme') === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)' },
+                            ticks: { color: getCssVar('--text-secondary'), font: { family: 'Inter' } },
+                        },
+                        y: {
+                            title: { display: true, text: 'Portfolio Value', font: { family: 'Inter', size: 12, weight: '500' }, color: getCssVar('--text-secondary') },
+                            grid: { color: htmlEl.getAttribute('data-theme') === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)' },
+                            ticks: {
+                                color: getCssVar('--text-secondary'),
+                                font: { family: 'Inter' },
+                                callback: (v) => formatCurrencyShort(v),
+                            },
+                        },
+                    },
+                },
+            });
+        }
+
+        function updateInvestChart(result, inputs) {
+            if (!investChart) return;
+            const { projections, contribs, leadingFundId } = result;
+            const { years, selectedFunds } = inputs;
+            const labels = Array.from({ length: years + 1 }, (_, i) => i);
+
+            const datasets = [];
+
+            // Contributions dataset
+            datasets.push({
+                label: 'Your Contributions',
+                data: contribs,
+                borderColor: getCssVar('--invest-contrib'),
+                backgroundColor: 'transparent',
+                borderDash: [8, 4],
+                borderWidth: 1.5,
+                pointRadius: 0,
+                pointHoverRadius: 4,
+                order: 999,
+                isContributions: true,
+            });
+
+            // Fund datasets
+            for (const fundId of selectedFunds) {
+                const fund = FUND_CONFIG[fundId];
+                const color = getCssVar(fund.color);
+                const isLeading = fundId === leadingFundId;
+
+                datasets.push({
+                    label: fund.label,
+                    data: projections[fundId],
+                    borderColor: color,
+                    backgroundColor: isLeading ? hexToRgba(color, 0.06) : 'transparent',
+                    fill: isLeading ? { target: 0, above: hexToRgba(color, 0.06) } : false,
+                    borderWidth: 2.5,
+                    tension: 0.3,
+                    pointRadius: 0,
+                    pointHoverRadius: 5,
+                    order: isLeading ? 1 : 2,
+                });
+            }
+
+            investChart.data.labels = labels;
+            investChart.data.datasets = datasets;
+            investChart.update('active');
+        }
+
+        // ── Data Table ──
+        function renderInvestTable(result, inputs) {
+            const { projections, contribs } = result;
+            const { years, selectedFunds } = inputs;
+            const table = document.getElementById('invest-data-table');
+
+            // Header
+            let headerHTML = '<thead><tr><th style="text-align:center;">Year</th><th>Your Contributions</th>';
+            for (const id of selectedFunds) {
+                headerHTML += `<th>${FUND_CONFIG[id].label} (Projected)</th>`;
+            }
+            headerHTML += '</tr></thead>';
+
+            // Body
+            let bodyHTML = '<tbody>';
+            for (let y = 0; y <= years; y++) {
+                const isFinal = y === years;
+                bodyHTML += `<tr class="${isFinal ? 'final-row' : ''}">`;
+                bodyHTML += `<td style="text-align:center;font-weight:600;color:var(--text-secondary);">${y}</td>`;
+                bodyHTML += `<td class="contrib-col">${formatCurrency(contribs[y])}</td>`;
+                for (const id of selectedFunds) {
+                    bodyHTML += `<td>${formatCurrency(projections[id][y])}</td>`;
+                }
+                bodyHTML += '</tr>';
+            }
+            bodyHTML += '</tbody>';
+
+            table.innerHTML = headerHTML + bodyHTML;
+        }
+
+        // ── Fee Card ──
+        function renderFeeCard(result, inputs, customRates) {
+            const card = document.getElementById('invest-fee-card');
+            const body = document.getElementById('invest-fee-body');
+            const advancedBody = document.getElementById('invest-advanced-body');
+
+            if (!advancedBody.classList.contains('open')) {
+                card.hidden = true;
+                return;
+            }
+
+            const { leadingFundId } = result;
+            const { years, selectedFunds, initialInvestment, monthlyContrib } = inputs;
+
+            if (selectedFunds.length === 0) { card.hidden = true; return; }
+
+            const fund = FUND_CONFIG[leadingFundId];
+            if (fund.expenseRatio === null) { card.hidden = true; return; }
+
+            const er = customRates?.[leadingFundId]?.er ?? (fund.expenseRatio ?? 0);
+            const grossRate = customRates?.[leadingFundId]?.rate ?? fund.grossReturn;
+
+            const fvGross = projectYearly(initialInvestment, monthlyContrib, years, grossRate)[years];
+            const fvNet = projectYearly(initialInvestment, monthlyContrib, years, grossRate - er)[years];
+            const feeCost = fvGross - fvNet;
+
+            const isHighFee = er > 0.005;
+
+            card.hidden = false;
+            let html = `<p>At ${(er * 100).toFixed(2)}% annual fees, your estimated fee cost on ${fund.label} is <span class="fee-card-amount">${formatCurrency(feeCost)}</span> over ${years} years.</p>`;
+
+            if (!isHighFee) {
+                html += `<p style="margin-top:0.5rem;font-size:var(--text-sm);color:var(--text-secondary);">Low-cost index funds keep more of your money working.</p>`;
+            }
+
+            if (isHighFee) {
+                const fvLowER = projectYearly(initialInvestment, monthlyContrib, years, grossRate - 0.0003)[years];
+                const savings = fvLowER - fvNet;
+                html += `<div class="fee-savings-callout">Switching to a 0.03% index fund could save you an estimated ${formatCurrency(savings)} over the same period.</div>`;
+            }
+
+            body.innerHTML = html;
+        }
+
+        // ── Main Update ──
+        function updateInvestment() {
+            const inputs = readInvestInputs();
+            const result = computeInvestment(inputs, investCustomRates);
+
+            updateInvestBanner(result, inputs);
+            updateInvestStatCards(result, inputs);
+            updateInvestChart(result, inputs);
+            renderInvestTable(result, inputs);
+            renderFeeCard(result, inputs, investCustomRates);
+        }
+
+        const debouncedInvestUpdate = debounce(updateInvestment, 16);
+
+        // ── Wire Investment Inputs ──
+        function wireInvestInputs() {
+            const investPairs = [
+                ['invest-initial-num', 'invest-initial'],
+                ['invest-monthly-num', 'invest-monthly'],
+                ['invest-years-num', 'invest-years'],
+            ];
+
+            investPairs.forEach(([numId, sliderId]) => {
+                const numEl = document.getElementById(numId);
+                const sliderEl = document.getElementById(sliderId);
+                numEl.addEventListener('input', () => {
+                    sliderEl.value = numEl.value;
+                    debouncedInvestUpdate();
+                });
+                numEl.addEventListener('change', () => {
+                    updateInvestment();
+                });
+                sliderEl.addEventListener('input', () => {
+                    numEl.value = sliderEl.value;
+                    debouncedInvestUpdate();
+                });
+                sliderEl.addEventListener('change', () => {
+                    numEl.value = sliderEl.value;
+                    updateInvestment();
+                });
+            });
+
+            // Advanced toggle
+            const advToggle = document.getElementById('invest-advanced-toggle');
+            const advBody = document.getElementById('invest-advanced-body');
+            advToggle.addEventListener('click', () => {
+                advToggle.classList.toggle('open');
+                advBody.classList.toggle('open');
+                updateInvestment(); // re-render fee card visibility
+            });
+
+            // Hint click opens advanced
+            const hint = document.getElementById('invest-hint-escalate');
+            if (hint) {
+                hint.addEventListener('click', () => {
+                    if (!advBody.classList.contains('open')) {
+                        advToggle.classList.add('open');
+                        advBody.classList.add('open');
+                    }
+                    const contribSlider = document.getElementById('invest-contrib-increase');
+                    if (contribSlider) contribSlider.focus();
+                });
+            }
+
+            // Info popover
+            const infoBtn = document.getElementById('invest-info-btn');
+            const popover = document.getElementById('invest-popover');
+            infoBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                popover.hidden = !popover.hidden;
+            });
+            document.addEventListener('click', (e) => {
+                if (!popover.hidden && !popover.contains(e.target) && e.target !== infoBtn) {
+                    popover.hidden = true;
+                }
+            });
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && !popover.hidden) {
+                    popover.hidden = true;
+                }
+            });
+
+            // Table toggle
+            const tableToggle = document.getElementById('invest-table-toggle');
+            const tableBody = document.getElementById('invest-table-body');
+            tableToggle.addEventListener('click', () => {
+                tableToggle.classList.toggle('open');
+                tableBody.classList.toggle('open');
+                tableToggle.setAttribute('aria-expanded', tableBody.classList.contains('open'));
+                const label = tableToggle.querySelector('span:first-child');
+                label.textContent = tableBody.classList.contains('open') ? 'Hide Breakdown' : 'Show Year-by-Year Breakdown';
+            });
+        }
+
+        // ── Section Nav (fade switch) ──
+        let activeSection = 'mortgage-calculator';
+
+        function showSection(el) {
+            el.classList.remove('section-hidden', 'section-fading-out');
+        }
+
+        function hideSection(el) {
+            el.classList.add('section-hidden');
+            el.classList.remove('section-fading-out');
+        }
+
+        function switchSection(sectionId) {
+            if (sectionId === activeSection) return;
+
+            const navBtns = document.querySelectorAll('.section-nav-btn');
+            const mortgageEl = document.getElementById('mortgage-calculator');
+            const investEl = document.getElementById('investment-calculator');
+            const dividerEl = document.querySelector('.section-divider');
+
+            navBtns.forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.section === sectionId);
+            });
+
+            // Determine what's fading out and what's fading in
+            const outEls = sectionId === 'investment-calculator'
+                ? [mortgageEl]
+                : [dividerEl, investEl];
+            const inEls = sectionId === 'investment-calculator'
+                ? [dividerEl, investEl]
+                : [mortgageEl];
+
+            // Fade out
+            outEls.forEach(el => el.classList.add('section-fading-out'));
+
+            setTimeout(() => {
+                // Hide outgoing
+                outEls.forEach(el => hideSection(el));
+                // Show incoming
+                inEls.forEach(el => showSection(el));
+                window.scrollTo({ top: 0, behavior: 'auto' });
+            }, 350);
+
+            activeSection = sectionId;
+        }
+
+        function initSectionNav() {
+            const navBtns = document.querySelectorAll('.section-nav-btn');
+            navBtns.forEach(btn => {
+                btn.addEventListener('click', () => switchSection(btn.dataset.section));
+            });
+
+            // Start with investment section hidden
+            const dividerEl = document.querySelector('.section-divider');
+            const investEl = document.getElementById('investment-calculator');
+            dividerEl.classList.add('section-hidden');
+            investEl.classList.add('section-hidden');
+        }
+
+        // ── Update invest chart colors on theme toggle ──
+        // Hook into the existing theme toggle button
+        themeToggle.addEventListener('click', () => {
+            if (investChart) {
+                setTimeout(() => {
+                    renderFundPills(investSelectedFunds);
+                    updateInvestment();
+                    updateInvestChartColors();
+                }, 100);
+            }
+        });
+
+        function updateInvestChartColors() {
+            if (!investChart) return;
+            const isDark = htmlEl.getAttribute('data-theme') === 'dark';
+            const gridColor = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)';
+            const textColor = isDark ? '#9ca3af' : '#5f6672';
+            const tooltipBg = isDark ? '#374151' : '#1a1d23';
+
+            investChart.options.scales.x.grid.color = gridColor;
+            investChart.options.scales.x.ticks.color = textColor;
+            investChart.options.scales.x.title.color = textColor;
+            investChart.options.scales.y.grid.color = gridColor;
+            investChart.options.scales.y.ticks.color = textColor;
+            investChart.options.scales.y.title.color = textColor;
+            investChart.options.plugins.tooltip.backgroundColor = tooltipBg;
+            investChart.update('none');
+        }
+
+        // ── Init Investment Calculator ──
+        function initInvestmentCalculator() {
+            initInvestChart();
+            renderFundPills(investSelectedFunds);
+            renderAdvancedPanel();
+            wireInvestInputs();
+            initSectionNav();
+            updateInvestment();
+            updateInvestChartColors();
+        }
+
+        // ═══════════════════════════════════════════════
         // INIT
         // ═══════════════════════════════════════════════
         initCharts();
         updateChartColors(); // Apply theme colors to charts immediately
         recalculate();
+        initInvestmentCalculator();
     </script>
 </body>
 
