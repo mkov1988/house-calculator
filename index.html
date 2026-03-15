@@ -4,9 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mortgage vs. Invest Calculator — Compare 30-Year Wealth Outcomes</title>
+    <title>House Calculator — Mortgage Decisions & Investment Growth</title>
     <meta name="description"
-        content="Should you put a massive down payment on your house or invest the difference? Compare 30-year outcomes with this interactive calculator.">
+        content="Make data-driven decisions about your home and your money. Compare mortgage down-payment strategies and project long-term investment growth.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
@@ -1327,6 +1327,102 @@
             color: #818cf8;
         }
 
+        .app-bar-section-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+            opacity: 0.7;
+            margin-top: 2px;
+            transition: opacity 0.35s ease;
+        }
+
+        /* Cross-link callout */
+        .cross-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 1.25rem;
+            background: var(--accent-light);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: var(--text-sm);
+            color: var(--accent);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+            text-decoration: none;
+        }
+
+        .cross-link:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-1px);
+        }
+
+        [data-theme="dark"] .cross-link {
+            background: rgba(99, 102, 241, 0.1);
+            color: #818cf8;
+        }
+
+        .cross-link-arrow {
+            margin-left: auto;
+            font-size: 1.1rem;
+        }
+
+        /* Cash flow zebra striping */
+        .cf-row.subtotal,
+        .cf-row.total {
+            background: rgba(0, 0, 0, 0.02);
+        }
+
+        [data-theme="dark"] .cf-row.subtotal,
+        [data-theme="dark"] .cf-row.total {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        /* Mortgage reset button */
+        .mortgage-reset-btn {
+            background: none;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 0.4rem 0.85rem;
+            font-family: inherit;
+            font-size: var(--text-sm);
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.15s;
+            margin-top: 0.5rem;
+            width: 100%;
+        }
+
+        .mortgage-reset-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        /* Soft warning inline note */
+        .soft-warning {
+            font-size: var(--text-sm);
+            color: #b45309;
+            background: var(--orange-bg);
+            border: 1px solid #fde68a;
+            border-radius: var(--radius-sm);
+            padding: 0.35rem 0.6rem;
+            margin-top: 0.35rem;
+            display: none;
+        }
+
+        [data-theme="dark"] .soft-warning {
+            color: #fcd34d;
+            border-color: #b45309;
+        }
+
+        .soft-warning.visible {
+            display: block;
+        }
+
         @media (max-width: 767px) {
             .section-nav {
                 margin-left: 0;
@@ -1899,13 +1995,16 @@
     <header class="app-bar">
         <div class="app-bar-inner">
             <div class="app-bar-brand">
-                <h1>Mortgage vs. Invest</h1>
+                <h1>House Calculator</h1>
                 <span class="app-bar-divider"></span>
-                <p>Where should the money go?</p>
+                <div>
+                    <p>Make smarter decisions about your home & money</p>
+                    <p class="app-bar-section-label" id="app-bar-section-label">Mortgage vs. Invest</p>
+                </div>
             </div>
             <nav class="section-nav" id="sectionNav">
                 <button class="section-nav-btn active" data-section="mortgage-calculator">Mortgage vs. Invest</button>
-                <button class="section-nav-btn" data-section="investment-calculator">Compound Calculator</button>
+                <button class="section-nav-btn" data-section="investment-calculator">Investment Growth</button>
             </nav>
             <div class="app-bar-utils">
                 <button class="theme-toggle" id="themeToggle" aria-label="Toggle Dark Mode">🌙</button>
@@ -1918,8 +2017,13 @@
 
         <!-- ─── LEFT: INPUTS ─── -->
         <aside class="inputs-panel card" id="inputs-panel">
-            <div class="panel-title">🏠 Your Inputs</div>
-            <div class="panel-subtitle">Your home and your cash — we'll do the math</div>
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+                <div>
+                    <div class="panel-title">🏠 Your Inputs</div>
+                    <div class="panel-subtitle">Your home and your cash — we'll do the math</div>
+                </div>
+                <button class="mortgage-reset-btn" id="mortgageResetBtn" style="width:auto;margin-top:0;">Reset</button>
+            </div>
 
             <!-- Home Price -->
             <div class="input-group">
@@ -1965,19 +2069,25 @@
 
                 <div style="display: flex; justify-content: space-between; margin-top: 12px; margin-bottom: 12px;">
                     <div>
-                        <div
-                            style="font-size: 0.875rem; color: var(--text-secondary); font-weight: 600; margin-bottom: 4px;">
-                            Down payment</div>
-                        <div id="s2DownDisplay" style="font-size: 1.5rem; font-weight: 800; color: var(--s2-color);">
-                            $150,000</div>
+                        <label for="s2DownInput"
+                            style="font-size: 0.875rem; color: var(--text-secondary); font-weight: 600; margin-bottom: 4px; display: block;">
+                            Down payment</label>
+                        <div class="input-row" style="margin: 0;">
+                            <span class="unit" style="font-size: 1.25rem; font-weight: 800; color: var(--s2-color);">$</span>
+                            <input type="number" id="s2DownInput" value="150000" min="0" step="1000"
+                                style="font-size: 1.25rem; font-weight: 800; color: var(--s2-color); width: 120px; border: 1px dashed var(--border); background: transparent; padding: 2px 6px;">
+                        </div>
                         <input type="hidden" id="s2Down" value="150000">
                     </div>
                     <div style="text-align: right;">
-                        <div
-                            style="font-size: 0.875rem; color: var(--text-secondary); font-weight: 600; margin-bottom: 4px;">
-                            Invest the Rest</div>
-                        <div id="s2InvestDisplay" style="font-size: 1.5rem; font-weight: 800; color: var(--s2-color);">
-                            $400,000</div>
+                        <label for="s2InvestInput"
+                            style="font-size: 0.875rem; color: var(--text-secondary); font-weight: 600; margin-bottom: 4px; display: block;">
+                            Invest the Rest</label>
+                        <div class="input-row" style="margin: 0; justify-content: flex-end;">
+                            <span class="unit" style="font-size: 1.25rem; font-weight: 800; color: var(--s2-color);">$</span>
+                            <input type="number" id="s2InvestInput" value="400000" min="0" step="1000"
+                                style="font-size: 1.25rem; font-weight: 800; color: var(--s2-color); width: 120px; border: 1px dashed var(--border); background: transparent; padding: 2px 6px; text-align: right;">
+                        </div>
                         <input type="hidden" id="s2Invest" value="400000">
                     </div>
                 </div>
@@ -2013,7 +2123,7 @@
                     <span class="unit">%</span>
                 </div>
                 <input type="range" id="grossReturnSlider" min="0" max="20" step="0.1" value="10">
-                <div class="pct-note" id="netReturnNote">Net Return (after dividend taxes): 9.55%</div>
+                <div class="pct-note" id="netReturnNote">Net Return (after dividend taxes): 9.55%<span class="tooltip-wrap"><span class="tooltip-icon">?</span><span class="tooltip-text">We reduce your gross return by (dividend yield × dividend tax rate) to model after-tax reality. Adjust both in Advanced Settings.</span></span></div>
             </div>
 
             <!-- Advanced Settings -->
@@ -2317,6 +2427,13 @@
                 </div>
             </div>
 
+            <!-- Cross-link to Investment Growth -->
+            <div class="cross-link" id="mortgage-to-invest" onclick="switchSection('investment-calculator')">
+                <span>📈</span>
+                <span>Want to explore how the invested difference grows? See it in the Investment Growth Calculator</span>
+                <span class="cross-link-arrow">→</span>
+            </div>
+
         </main>
     </div>
 
@@ -2347,6 +2464,7 @@
                     <span class="invest-banner-dot">&middot;</span>
                     <span id="invest-banner-contribs">$160,000 contributed</span>
                 </div>
+                <div class="invest-banner-inputs" id="invest-banner-inputs" style="font-size:var(--text-sm);color:var(--text-secondary);margin-top:0.25rem;"></div>
                 <div class="invest-banner-comparison" id="invest-banner-comparison"></div>
             </div>
 
@@ -2396,12 +2514,12 @@
                     <div class="invest-pills" id="invest-pills">
                         <!-- Pills generated by JS from FUND_CONFIG -->
                     </div>
-                    <p class="invest-nominal-note">Returns shown are nominal (not adjusted for inflation)</p>
+                    <p class="invest-nominal-note">Select multiple to compare · Returns shown are nominal (not adjusted for inflation)</p>
                 </div>
 
                 <!-- Row 3: Customize toggle -->
                 <div class="advanced-toggle" id="invest-advanced-toggle">
-                    <span>⚙ Customize Assumptions — adjust returns, fees, and contribution growth</span>
+                    <span style="color:var(--accent);">Customize Assumptions</span>
                     <span class="chevron">▾</span>
                 </div>
                 <div class="invest-advanced-body" id="invest-advanced-body">
@@ -2444,17 +2562,19 @@
                         <h3 class="invest-chart-title">Investment Growth Over Time</h3>
                         <p class="invest-chart-sub">Projected values based on historical average annual returns</p>
                     </div>
-                    <button class="invest-info-btn" id="invest-info-btn" aria-label="About these projections">ℹ️</button>
-                </div>
-
-                <!-- Info popover -->
-                <div class="invest-popover" id="invest-popover" hidden>
-                    <p>This chart shows projected growth based on historical average annual returns. Actual year-to-year returns vary significantly — including negative years. Historically, longer time horizons have reduced the impact of short-term volatility.</p>
-                    <p style="margin-top:0.5rem">Returns shown are nominal (not adjusted for inflation).</p>
+                    <span class="tooltip-wrap tip-right"><span class="tooltip-icon">?</span><span class="tooltip-text">Projected growth based on historical average annual returns. Actual year-to-year returns vary significantly — including negative years. Longer time horizons have historically reduced the impact of short-term volatility.</span></span>
                 </div>
 
                 <div class="invest-chart-wrapper">
                     <canvas id="investChart"></canvas>
+                </div>
+            </div>
+
+            <!-- How It Works -->
+            <div class="how-it-works">
+                <div class="hiw-title">📋 How It Works</div>
+                <div class="hiw-body">
+                    This calculator compounds your initial investment and monthly contributions at each fund's historical average return, minus its annual expense ratio. Contributions are assumed to be made monthly. All values are <strong>nominal — not adjusted for inflation</strong>. Use the Customize panel to adjust return assumptions and model contribution increases over time.
                 </div>
             </div>
 
@@ -2471,6 +2591,13 @@
                         </table>
                     </div>
                 </div>
+            </div>
+
+            <!-- Cross-link back to Mortgage -->
+            <div class="cross-link" id="invest-to-mortgage" onclick="switchSection('mortgage-calculator')">
+                <span>🏠</span>
+                <span>See how this fits into a home-buying decision — Mortgage vs. Invest Calculator</span>
+                <span class="cross-link-arrow">→</span>
             </div>
         </div>
     </section>
@@ -2582,11 +2709,26 @@
         const s2InvestBox = document.getElementById('s2Invest');
         const s2Slider = document.getElementById('s2DownSlider');
 
+        const s2DownInput = document.getElementById('s2DownInput');
+        const s2InvestInput = document.getElementById('s2InvestInput');
+
         [s2DownBox, s2InvestBox, s2Slider].forEach(el => {
             el.addEventListener('input', (e) => {
                 enforceConstraints(e.target.id);
                 recalculate();
             });
+        });
+
+        // Editable Scenario 2 inputs — sync to hidden fields then enforce
+        s2DownInput.addEventListener('input', () => {
+            s2DownBox.value = s2DownInput.value;
+            enforceConstraints('s2Down');
+            recalculate();
+        });
+        s2InvestInput.addEventListener('input', () => {
+            s2InvestBox.value = s2InvestInput.value;
+            enforceConstraints('s2Invest');
+            recalculate();
         });
 
         function enforceConstraints(sourceId) {
@@ -2622,10 +2764,9 @@
             s2Slider.value = s2D;
             s2InvestBox.value = s2I;
 
-            const dpDisplay = document.getElementById('s2DownDisplay');
-            if (dpDisplay) dpDisplay.textContent = fmt(s2D);
-            const invDisplay = document.getElementById('s2InvestDisplay');
-            if (invDisplay) invDisplay.textContent = fmt(s2I);
+            // Update editable inputs with raw numeric values
+            if (s2DownInput && document.activeElement !== s2DownInput) s2DownInput.value = s2D;
+            if (s2InvestInput && document.activeElement !== s2InvestInput) s2InvestInput.value = s2I;
 
             // Enforce S1 Max Down
             const s1D = Math.min(homePrice, totalCash);
@@ -2829,21 +2970,21 @@
 
             const heroFooterHTML = (val, pct, winnerName) => `
                 <div class="result-footer footer-hero">
-                    <div class="footer-title">✨ WEALTH ADVANTAGE</div>
+                    <div class="footer-title">WEALTH ADVANTAGE</div>
                     <div class="footer-value">+${fmt(val)}</div>
-                    <div class="footer-sub">${winnerName} wins by ${pct}%</div>
+                    <div class="footer-sub">${winnerName} ahead by ${pct}%</div>
                 </div>
             `;
 
             const baselineFooterHTML = (val) => `
                 <div class="result-footer footer-baseline">
-                    <div class="footer-title">📉 OPPORTUNITY COST</div>
+                    <div class="footer-title">DIFFERENCE</div>
                     <div class="footer-value">-$${fmt(val).replace('$', '')}</div>
-                    <div class="footer-sub">Baseline strategy leaves money on the table</div>
+                    <div class="footer-sub">Leaves ${fmt(val)} on the table vs. the other strategy</div>
                 </div>
             `;
 
-            const badgeHTML = `<div class="winner-badge" id="winnerBadge">✓ WINNER</div>`;
+            const badgeHTML = `<div class="winner-badge" id="winnerBadge">+${fmt(advAbs)} ahead</div>`;
 
             // Reset badges & Clear old static footers
             const existingBadges = document.querySelectorAll('.winner-badge');
@@ -3126,6 +3267,64 @@
         }
 
         // ═══════════════════════════════════════════════
+        // MORTGAGE RESET
+        // ═══════════════════════════════════════════════
+        const MORTGAGE_DEFAULTS = {
+            homePrice: 750000, totalCash: 550000, mortgageRate: 8,
+            grossReturn: 10, loanTerm: 30, propTax: 1.2,
+            insurance: 1200, maintenance: 1, divYield: 1.8, divTax: 25,
+        };
+
+        document.getElementById('mortgageResetBtn').addEventListener('click', () => {
+            for (const [key, val] of Object.entries(MORTGAGE_DEFAULTS)) {
+                const numEl = document.getElementById(key);
+                const sliderEl = document.getElementById(key + 'Slider');
+                if (numEl) numEl.value = val;
+                if (sliderEl) sliderEl.value = val;
+            }
+            // Reset Scenario 2 slider
+            document.getElementById('s2DownSlider').value = 150000;
+            document.getElementById('s2Down').value = 150000;
+            document.getElementById('s2Invest').value = 400000;
+            enforceConstraints('init');
+            recalculate();
+        });
+
+        // ═══════════════════════════════════════════════
+        // NUMBER FORMATTING (comma display)
+        // ═══════════════════════════════════════════════
+        function formatNumberInput(input) {
+            // Only format dollar inputs (not percentage or year inputs)
+            if (input.step && parseFloat(input.step) >= 100) {
+                input.addEventListener('focus', function () {
+                    // On focus, show raw number for editing
+                    this.type = 'number';
+                });
+            }
+        }
+
+        // ═══════════════════════════════════════════════
+        // CHART ACCESSIBILITY (mortgage charts)
+        // ═══════════════════════════════════════════════
+        function applyChartAccessibility() {
+            // Add dashed line to Scenario 1 and distinct point styles
+            if (netWealthChart) {
+                netWealthChart.data.datasets[0].borderDash = [8, 4];
+                netWealthChart.data.datasets[0].pointStyle = 'circle';
+                netWealthChart.data.datasets[1].pointStyle = 'rectRot';
+                netWealthChart.data.datasets[1].borderDash = [];
+                netWealthChart.update('none');
+            }
+            if (liquidityChart) {
+                liquidityChart.data.datasets[0].borderDash = [8, 4];
+                liquidityChart.data.datasets[0].pointStyle = 'circle';
+                liquidityChart.data.datasets[1].pointStyle = 'rectRot';
+                liquidityChart.data.datasets[1].borderDash = [];
+                liquidityChart.update('none');
+            }
+        }
+
+        // ═══════════════════════════════════════════════
         // INVESTMENT GROWTH CALCULATOR
         // ═══════════════════════════════════════════════
 
@@ -3385,7 +3584,7 @@
                         <span class="unit">%</span>
                     </div>
                     <input type="range" id="invest-contrib-increase" min="0" max="15" step="0.5" value="${(investAnnualContribIncrease * 100).toFixed(1)}">
-                    <p class="invest-contrib-hint">ⓘ How much you increase contributions each year (salary growth)</p>
+                    <p class="invest-contrib-hint">ⓘ Setting this to 3% means your $500/mo becomes $515 in Year 2, $530 in Year 3, etc. This can add $300K+ over 25 years.</p>
                 </div>
             </div>`;
 
@@ -3499,7 +3698,7 @@
                 }
             }
 
-            // Reset button
+            // Reset button — resets fund rates, ERs, AND contribution increase
             const resetBtn = document.getElementById('invest-reset-btn');
             if (resetBtn) {
                 resetBtn.addEventListener('click', () => {
@@ -3577,6 +3776,12 @@
             // Animate banner amount
             animateValue(amountEl, lastBannerAmount, leadingFinalValue, 400, formatCurrency);
             lastBannerAmount = leadingFinalValue;
+
+            // Input summary line
+            const inputsEl = document.getElementById('invest-banner-inputs');
+            if (inputsEl) {
+                inputsEl.textContent = `Based on ${formatCurrency(inputs.initialInvestment)} initial + ${formatCurrency(inputs.monthlyContrib)}/mo over ${years} years`;
+            }
 
             // HYSA comparison
             if (selectedFunds.includes('hysa') && leadingFundId !== 'hysa' && result.projections.hysa) {
@@ -3896,24 +4101,6 @@
                 });
             }
 
-            // Info popover
-            const infoBtn = document.getElementById('invest-info-btn');
-            const popover = document.getElementById('invest-popover');
-            infoBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                popover.hidden = !popover.hidden;
-            });
-            document.addEventListener('click', (e) => {
-                if (!popover.hidden && !popover.contains(e.target) && e.target !== infoBtn) {
-                    popover.hidden = true;
-                }
-            });
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape' && !popover.hidden) {
-                    popover.hidden = true;
-                }
-            });
-
             // Table toggle
             const tableToggle = document.getElementById('invest-table-toggle');
             const tableBody = document.getElementById('invest-table-body');
@@ -3945,10 +4132,16 @@
             const mortgageEl = document.getElementById('mortgage-calculator');
             const investEl = document.getElementById('investment-calculator');
             const dividerEl = document.querySelector('.section-divider');
+            const sectionLabel = document.getElementById('app-bar-section-label');
 
             navBtns.forEach(btn => {
                 btn.classList.toggle('active', btn.dataset.section === sectionId);
             });
+
+            // Update persistent section indicator in header
+            sectionLabel.textContent = sectionId === 'investment-calculator'
+                ? 'Investment Growth Calculator'
+                : 'Mortgage vs. Invest';
 
             // Determine what's fading out and what's fading in
             const outEls = sectionId === 'investment-calculator'
@@ -4031,6 +4224,7 @@
         initCharts();
         updateChartColors(); // Apply theme colors to charts immediately
         recalculate();
+        applyChartAccessibility(); // Dashed lines + distinct markers for colorblind accessibility
         initInvestmentCalculator();
     </script>
 </body>
