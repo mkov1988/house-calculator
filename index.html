@@ -189,16 +189,25 @@
             width: 95vw;
             max-width: 1600px;
             margin: 0 auto;
-            padding: 1.5rem 1.6rem;
+            padding: 0 1.6rem;
             display: flex;
-            align-items: center;
-            justify-content: space-between;
+            align-items: stretch;
         }
 
         .app-bar-brand {
             display: flex;
-            align-items: baseline;
+            align-items: center;
             gap: 0.75rem;
+            padding: 1rem 0;
+        }
+
+        .app-bar-logo {
+            width: 2.25rem;
+            height: 2.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
         }
 
         .app-bar-brand h1 {
@@ -209,26 +218,12 @@
             white-space: nowrap;
         }
 
-        .app-bar-divider {
-            width: 1px;
-            height: 1.1rem;
-            background: var(--border);
-            flex-shrink: 0;
-            align-self: center;
-        }
-
-        .app-bar-brand p {
-            color: var(--text-secondary);
-            font-size: var(--text-sm);
-            font-weight: 400;
-            line-height: 1.2;
-            white-space: nowrap;
-        }
-
         .app-bar-utils {
             display: flex;
             align-items: center;
             gap: 0.75rem;
+            margin-left: auto;
+            padding: 1rem 0;
         }
 
         /* ═══════════════════════════════════════════════
@@ -1301,8 +1296,9 @@
        ═══════════════════════════════════════════════ */
         .section-nav {
             display: flex;
-            gap: 0.25rem;
-            margin-left: 1.5rem;
+            gap: 2rem;
+            margin-left: 3rem;
+            align-self: stretch;
         }
 
         .section-nav-btn {
@@ -1312,38 +1308,54 @@
             font-size: var(--text-sm);
             font-weight: 600;
             color: var(--text-secondary);
-            padding: 0.4rem 0.85rem;
-            border-radius: var(--radius-sm);
+            padding: 0 8px;
+            margin-bottom: -1px;
             cursor: pointer;
-            transition: all 0.15s;
+            transition: color 0.15s, padding 0.15s, margin 0.15s, background 0.15s;
             white-space: nowrap;
+            display: flex;
+            align-items: center;
+            position: relative;
         }
 
         .section-nav-btn:hover {
-            background: var(--accent-light);
             color: var(--accent);
+            background: rgba(127, 61, 255, 0.06);
+            padding: 0 16px;
+            margin-left: -8px;
+            margin-right: -8px;
         }
 
         .section-nav-btn.active {
-            background: var(--accent-light);
             color: var(--accent);
+        }
+
+        .section-nav-btn::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: transparent;
+            transition: background 0.15s;
+        }
+
+        .section-nav-btn.active::after {
+            background: var(--accent);
         }
 
         [data-theme="dark"] .section-nav-btn:hover,
         [data-theme="dark"] .section-nav-btn.active {
-            background: rgba(99, 102, 241, 0.15);
             color: #818cf8;
         }
 
+        [data-theme="dark"] .section-nav-btn.active {
+            border-bottom-color: #818cf8;
+        }
+
         .app-bar-section-label {
-            font-size: 0.7rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: var(--text-secondary);
-            opacity: 0.7;
-            margin-top: 2px;
-            transition: opacity 0.35s ease;
+            display: none;
         }
 
         /* Cross-link callout */
@@ -1435,6 +1447,7 @@
             .section-nav {
                 margin-left: 0;
                 margin-top: 0.5rem;
+                gap: 1rem;
             }
 
             .app-bar-inner {
@@ -1529,10 +1542,6 @@
         .invest-inputs-panel {
             padding: 2rem 1.5rem;
             align-self: start;
-            position: sticky;
-            top: 80px;
-            max-height: calc(100vh - 100px);
-            overflow-y: auto;
         }
 
         .invest-output-panel {
@@ -1609,39 +1618,6 @@
             font-style: italic;
         }
 
-        /* Sync Banner */
-        .invest-sync-banner {
-            background: var(--accent-light);
-            border: 1px solid var(--accent);
-            border-radius: var(--radius-sm);
-            padding: 0.75rem 1rem;
-            font-size: var(--text-sm);
-            color: var(--text);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            line-height: 1.4;
-        }
-
-        .invest-sync-banner .sync-icon {
-            flex-shrink: 0;
-        }
-
-        .invest-sync-banner .sync-dismiss {
-            margin-left: auto;
-            background: none;
-            border: none;
-            font-size: 1rem;
-            cursor: pointer;
-            color: var(--text-secondary);
-            padding: 0 0.25rem;
-            flex-shrink: 0;
-        }
-
-        .invest-sync-banner .sync-dismiss:hover {
-            color: var(--text);
-        }
-
         /* Banner */
         .invest-banner {
             border-left: 4px solid var(--invest-stock);
@@ -1669,12 +1645,6 @@
             font-size: var(--text-2xl);
             font-weight: 800;
             letter-spacing: -1px;
-        }
-
-        .invest-banner-after {
-            font-size: var(--text-lg);
-            font-weight: 400;
-            color: var(--text-secondary);
         }
 
         .invest-banner-fund {
@@ -1920,6 +1890,7 @@
 
         .invest-advanced-body.open {
             max-height: 200rem;
+            overflow: visible;
         }
 
         .invest-fund-group {
@@ -2020,12 +1991,8 @@
     <header class="app-bar">
         <div class="app-bar-inner">
             <div class="app-bar-brand">
+                <div class="app-bar-logo"><img src="house calc logo.svg" alt="House Calculator" width="31" height="31"></div>
                 <h1>House Calculator</h1>
-                <span class="app-bar-divider"></span>
-                <div>
-                    <p>Make smarter decisions about your home & money</p>
-                    <p class="app-bar-section-label" id="app-bar-section-label">Mortgage vs. Invest</p>
-                </div>
             </div>
             <nav class="section-nav" id="sectionNav">
                 <button class="section-nav-btn active" data-section="mortgage-calculator">Mortgage vs. Invest</button>
@@ -2064,7 +2031,7 @@
 
             <!-- Total Available Cash -->
             <div class="input-group">
-                <label for="totalCash" style="color: var(--text); font-weight: 600;">Total Available Cash<span
+                <label for="totalCash" style="color: var(--text); font-weight: 400;">Total Available Cash<span
                         class="tooltip-wrap"><span class="tooltip-icon">?</span><span class="tooltip-text">The total
                             amount of cash you have on hand to split between a down payment and
                             investing.</span></span></label>
@@ -2492,7 +2459,6 @@
                     <input type="number" id="invest-monthly-num" value="500" min="0" max="10000" step="50">
                 </div>
                 <input type="range" id="invest-monthly" min="0" max="10000" step="50" value="500">
-                <p class="invest-hint" id="invest-hint-escalate">Tip: Many people increase contributions yearly →</p>
             </div>
 
             <div class="input-group">
@@ -2540,15 +2506,11 @@
         <!-- ─── RIGHT: OUTPUTS ─── -->
         <main class="invest-output-panel">
 
-            <!-- Sync Banner (appears when navigating from mortgage) -->
-            <div class="invest-sync-banner" id="invest-sync-banner" hidden></div>
-
             <!-- Summary Banner -->
             <div class="invest-banner card" id="invest-banner">
-                <div class="invest-banner-eyebrow">Projected Portfolio Value</div>
+                <div class="invest-banner-eyebrow">Projected Portfolio Value after <span id="invest-banner-years">25</span> years<span class="tooltip-wrap" id="invest-sync-tooltip" style="display:none;"><span class="tooltip-icon">?</span><span class="tooltip-text" id="invest-sync-tooltip-text"></span></span></div>
                 <div class="invest-banner-hero">
                     <span class="invest-banner-amount" id="invest-banner-amount">$723,441</span>
-                    <span class="invest-banner-after">after <span id="invest-banner-years">25</span> years</span>
                 </div>
                 <div class="invest-banner-fund" id="invest-banner-fund">in Total US Stock Market</div>
                 <div class="invest-banner-detail">
@@ -3611,13 +3573,12 @@
             // Contribution increase section
             html += `<div class="invest-contrib-section">
                 <div class="input-group" style="margin-bottom:0.5rem;">
-                    <label>Annual Contribution Increase</label>
+                    <label>Annual Contribution Increase<span class="tooltip-wrap"><span class="tooltip-icon">?</span><span class="tooltip-text">Setting this to 3% means your $500/mo becomes $515 in Year 2, $530 in Year 3, etc. This can add $300K+ over 25 years.</span></span></label>
                     <div class="input-row">
                         <input type="number" id="invest-contrib-increase-num" value="${(investAnnualContribIncrease * 100).toFixed(1)}" min="0" max="15" step="0.5" style="width:5rem;">
                         <span class="unit">%</span>
                     </div>
                     <input type="range" id="invest-contrib-increase" min="0" max="15" step="0.5" value="${(investAnnualContribIncrease * 100).toFixed(1)}">
-                    <p class="invest-contrib-hint">ⓘ Setting this to 3% means your $500/mo becomes $515 in Year 2, $530 in Year 3, etc. This can add $300K+ over 25 years.</p>
                 </div>
             </div>`;
 
@@ -4184,14 +4145,15 @@
         }
 
         function updateSyncBanner(amount, grossReturn, years) {
-            const banner = document.getElementById('invest-sync-banner');
-            if (!banner) return;
+            const tooltipWrap = document.getElementById('invest-sync-tooltip');
+            const tooltipText = document.getElementById('invest-sync-tooltip-text');
+            if (!tooltipWrap || !tooltipText) return;
             if (amount > 0) {
                 const fmtAmt = '$' + Math.round(amount).toLocaleString('en-US');
-                banner.innerHTML = `<span class="sync-icon">🔗</span> Pre-filled from your mortgage scenario: <strong>${fmtAmt}</strong> initial investment over <strong>${years} years</strong>. <button class="sync-dismiss" onclick="this.parentElement.hidden=true">✕</button>`;
-                banner.hidden = false;
+                tooltipText.textContent = `Pre-filled from your mortgage scenario: ${fmtAmt} initial investment over ${years} years.`;
+                tooltipWrap.style.display = '';
             } else {
-                banner.hidden = true;
+                tooltipWrap.style.display = 'none';
             }
         }
 
@@ -4209,9 +4171,11 @@
             });
 
             // Update persistent section indicator in header
-            sectionLabel.textContent = sectionId === 'investment-calculator'
-                ? 'Investment Growth Calculator'
-                : 'Mortgage vs. Invest';
+            if (sectionLabel) {
+                sectionLabel.textContent = sectionId === 'investment-calculator'
+                    ? 'Investment Growth Calculator'
+                    : 'Mortgage vs. Invest';
+            }
 
             // Sync shared state when navigating mortgage → investment
             if (sectionId === 'investment-calculator' && activeSection === 'mortgage-calculator') {
