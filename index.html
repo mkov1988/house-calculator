@@ -124,7 +124,11 @@
         }
 
         [data-theme="dark"] input[type="range"] {
-            background: #4b5563;
+            background: linear-gradient(to right,
+                var(--accent) 0%,
+                var(--accent) var(--slider-fill, 0%),
+                #4b5563 var(--slider-fill, 0%),
+                #4b5563 100%);
         }
 
         [data-theme="dark"] .data-table thead th {
@@ -344,7 +348,11 @@
             width: 100%;
             height: 0.4rem;
             border-radius: 3px;
-            background: #e2e5ea;
+            background: linear-gradient(to right,
+                var(--accent) 0%,
+                var(--accent) var(--slider-fill, 0%),
+                #e2e5ea var(--slider-fill, 0%),
+                #e2e5ea 100%);
             outline: none;
             margin-top: 0.75rem;
             margin-bottom: 0.25rem;
@@ -375,6 +383,22 @@
             cursor: pointer;
             border: 3px solid white;
             box-shadow: 0 1px 0.2667rem rgba(0, 0, 0, 0.2);
+        }
+
+        .scenario-box.s2 input[type="range"] {
+            background: linear-gradient(to right,
+                var(--s2-color) 0%,
+                var(--s2-color) var(--slider-fill, 0%),
+                #e2e5ea var(--slider-fill, 0%),
+                #e2e5ea 100%);
+        }
+
+        [data-theme="dark"] .scenario-box.s2 input[type="range"] {
+            background: linear-gradient(to right,
+                var(--s2-color) 0%,
+                var(--s2-color) var(--slider-fill, 0%),
+                #4b5563 var(--slider-fill, 0%),
+                #4b5563 100%);
         }
 
         .scenario-box.s2 input[type="range"]::-webkit-slider-thumb {
@@ -2764,8 +2788,29 @@
         }
 
         // Run once on load to sync everything correctly
+        // ═══════════════════════════════════════════════
+        // SLIDER FILL (blue track left of thumb)
+        // ═══════════════════════════════════════════════
+        function updateSliderFill(slider) {
+            const min = parseFloat(slider.min) || 0;
+            const max = parseFloat(slider.max) || 100;
+            const val = parseFloat(slider.value) || 0;
+            const pct = max === min ? 0 : ((val - min) / (max - min)) * 100;
+            slider.style.setProperty('--slider-fill', pct + '%');
+        }
+
+        function initAllSliderFills() {
+            document.querySelectorAll('input[type="range"]').forEach(updateSliderFill);
+        }
+
+        // Update fill on drag for any slider (including dynamically created ones)
+        document.addEventListener('input', (e) => {
+            if (e.target.type === 'range') updateSliderFill(e.target);
+        });
+
         document.addEventListener("DOMContentLoaded", () => {
             enforceConstraints('init');
+            initAllSliderFills();
         });
 
         // ═══════════════════════════════════════════════
@@ -3625,6 +3670,7 @@
 
             html += `<button class="invest-reset-btn" id="invest-reset-btn">Reset to Defaults</button>`;
             body.innerHTML = html;
+            body.querySelectorAll('input[type="range"]').forEach(updateSliderFill);
 
             // Wire up advanced panel events
             wireAdvancedEvents();
