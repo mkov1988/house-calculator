@@ -2006,10 +2006,196 @@
                 min-height: 250px;
             }
         }
+
+        /* ═══════════════════════════════════════════════
+           WIZARD OVERLAY
+           ═══════════════════════════════════════════════ */
+        #wizard-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(244, 245, 247, 0.5);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transition: opacity 0.6s ease, backdrop-filter 0.6s ease;
+        }
+
+        [data-theme="dark"] #wizard-overlay {
+            background: rgba(17, 24, 39, 0.5);
+        }
+
+        .wizard-hidden {
+            opacity: 0;
+            pointer-events: none;
+            backdrop-filter: blur(0px) !important;
+            -webkit-backdrop-filter: blur(0px) !important;
+        }
+
+        .wizard-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: calc(var(--radius) * 1.5);
+            padding: 3rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: opacity 0.3s ease, transform 0.5s ease;
+        }
+
+        [data-theme="dark"] .wizard-card {
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        }
+
+        .wizard-card.fade-out {
+            opacity: 0;
+            transform: scale(0.95);
+        }
+
+        .wizard-step {
+            display: none;
+            flex-direction: column;
+            gap: 1.5rem;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .wizard-step.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .wizard-title {
+            font-size: var(--text-xl);
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 0.5rem;
+        }
+
+        .wizard-input-wrap {
+            position: relative;
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--accent);
+            display: flex;
+            justify-content: center;
+            align-items: baseline;
+            gap: 0.2rem;
+        }
+
+        .wizard-input-wrap span {
+            font-size: 2.5rem;
+        }
+
+        .wizard-input {
+            width: 100%;
+            max-width: 250px;
+            background: transparent;
+            border: none;
+            border-bottom: 3px dashed var(--border);
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--accent);
+            text-align: center;
+            outline: none;
+            padding: 0.5rem 0;
+            transition: border-color 0.2s;
+            font-family: inherit;
+        }
+
+        .wizard-input:focus {
+            border-bottom-color: var(--accent);
+        }
+
+        .wizard-input::-webkit-outer-spin-button,
+        .wizard-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .wizard-input[type="number"] { -moz-appearance: textfield; }
+
+        .wizard-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            font-size: var(--text-md);
+            font-weight: 700;
+            border-radius: 999px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+            margin-top: 1rem;
+        }
+
+        .wizard-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(79, 70, 229, 0.3);
+        }
+
+        .app-blurred {
+            filter: blur(8px);
+            opacity: 0.5;
+            pointer-events: none;
+            transition: filter 0.6s ease, opacity 0.6s ease;
+        }
+
+        .ghost-text {
+            position: fixed;
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--accent);
+            z-index: 10000;
+            pointer-events: none;
+            transition: all 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+            transform-origin: top left;
+            white-space: nowrap;
+        }
+
+        .pulse-highlight {
+            animation: pulseGlow 1.5s ease-out;
+        }
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.6); border-color: var(--accent); }
+            70% { box-shadow: 0 0 0 15px rgba(79, 70, 229, 0); border-color: var(--accent); }
+            100% { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0); border-color: var(--border); }
+        }
     </style>
 </head>
 
 <body>
+
+    <!-- ═══════════════ WIZARD OVERLAY ═══════════════ -->
+    <div id="wizard-overlay" style="display: none;">
+        <div class="wizard-card" id="wizard-card">
+            <!-- Step 1 -->
+            <div class="wizard-step active" id="wizard-step-1">
+                <div class="wizard-title">Let's run the numbers.<br>How much is the home you want to buy?</div>
+                <div class="wizard-input-wrap">
+                    <span>$</span>
+                    <input type="number" id="wiz-home-price" class="wizard-input" value="750000" step="10000">
+                </div>
+                <button class="wizard-btn" onclick="nextWizardStep()">Next &rarr;</button>
+            </div>
+            <!-- Step 2 -->
+            <div class="wizard-step" id="wizard-step-2">
+                <div class="wizard-title">Got it.<br>And how much total cash do you have available right now?</div>
+                <div class="wizard-input-wrap">
+                    <span>$</span>
+                    <input type="number" id="wiz-total-cash" class="wizard-input" value="150000" step="5000">
+                </div>
+                <button class="wizard-btn" onclick="finishWizard()">Show My Options ✨</button>
+            </div>
+        </div>
+    </div>
 
     <!-- ═══════════════ APP BAR ═══════════════ -->
     <header class="app-bar">
@@ -4304,6 +4490,115 @@
         }
 
         // ═══════════════════════════════════════════════
+        // WIZARD LOGIC
+        // ═══════════════════════════════════════════════
+        function initWizard() {
+            // UNCOMMENT BELOW FOR PRODUCTION TO ONLY SHOW WIZARD ONCE
+            /*
+            if (localStorage.getItem('houseCalcWizardSeen')) {
+                // Skip wizard
+                document.getElementById('wizard-overlay').style.display = 'none';
+                return;
+            }
+            */
+            
+            document.getElementById('wizard-overlay').style.display = 'flex';
+            
+            // Blur main UI
+            document.querySelector('.app-bar').classList.add('app-blurred');
+            document.querySelectorAll('.app-container, .section-divider, .invest-section').forEach(el => el.classList.add('app-blurred'));
+            
+            // Enter key navigation
+            document.getElementById('wiz-home-price').addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') nextWizardStep();
+            });
+            document.getElementById('wiz-total-cash').addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') finishWizard();
+            });
+            
+            // Set initial wizard inputs to actual slider values
+            document.getElementById('wiz-home-price').value = document.getElementById('homePrice').value;
+            document.getElementById('wiz-total-cash').value = document.getElementById('totalCash').value;
+        }
+
+        function nextWizardStep() {
+            document.getElementById('wizard-step-1').classList.remove('active');
+            document.getElementById('wizard-step-2').classList.add('active');
+            document.getElementById('wiz-total-cash').focus();
+        }
+
+        function finishWizard() {
+            localStorage.setItem('houseCalcWizardSeen', 'true');
+            
+            const wizHomePrice = document.getElementById('wiz-home-price');
+            const wizTotalCash = document.getElementById('wiz-total-cash');
+            const actualHomePrice = document.getElementById('homePrice');
+            const actualTotalCash = document.getElementById('totalCash');
+            
+            // Hide wizard card content
+            document.getElementById('wizard-card').classList.add('fade-out');
+            
+            // Unblur app
+            document.querySelector('.app-bar').classList.remove('app-blurred');
+            document.querySelectorAll('.app-container, .section-divider, .invest-section').forEach(el => el.classList.remove('app-blurred'));
+            
+            // Create ghost elements for "Whoosh"
+            createGhostFlight(wizHomePrice, actualHomePrice, () => {
+                actualHomePrice.value = wizHomePrice.value;
+                document.getElementById('homePriceSlider').value = wizHomePrice.value;
+                actualHomePrice.classList.add('pulse-highlight');
+                setTimeout(() => actualHomePrice.classList.remove('pulse-highlight'), 1500);
+            });
+            
+            createGhostFlight(wizTotalCash, actualTotalCash, () => {
+                actualTotalCash.value = wizTotalCash.value;
+                document.getElementById('totalCashSlider').value = wizTotalCash.value;
+                actualTotalCash.classList.add('pulse-highlight');
+                setTimeout(() => actualTotalCash.classList.remove('pulse-highlight'), 1500);
+                
+                // Trigger calculation update ("Poof")
+                document.getElementById('homePrice').dispatchEvent(new Event('change'));
+                
+                // Hide overlay fully after animation
+                document.getElementById('wizard-overlay').classList.add('wizard-hidden');
+                setTimeout(() => {
+                    document.getElementById('wizard-overlay').style.display = 'none';
+                }, 600);
+            });
+        }
+
+        function createGhostFlight(sourceInput, targetInput, onComplete) {
+            const sourceRect = sourceInput.getBoundingClientRect();
+            const targetRect = targetInput.getBoundingClientRect();
+            
+            const ghost = document.createElement('div');
+            ghost.className = 'ghost-text';
+            ghost.textContent = '$' + Number(sourceInput.value).toLocaleString('en-US');
+            
+            // Start position
+            ghost.style.left = sourceRect.left + 'px';
+            ghost.style.top = sourceRect.top + 'px';
+            
+            document.body.appendChild(ghost);
+            
+            // Trigger reflow
+            ghost.getBoundingClientRect();
+            
+            // Calculate scale and translation
+            const scale = 16 / 48; // Target font size is roughly 16px (1rem), start is 48px (3rem)
+            const targetX = targetRect.left;
+            const targetY = targetRect.top;
+            
+            ghost.style.transform = `translate(${targetX - sourceRect.left}px, ${targetY - sourceRect.top}px) scale(${scale})`;
+            ghost.style.color = 'var(--text)'; // match target text color
+            
+            setTimeout(() => {
+                onComplete();
+                ghost.remove();
+            }, 800); // 800ms transition matches CSS
+        }
+
+        // ═══════════════════════════════════════════════
         // INIT
         // ═══════════════════════════════════════════════
         initCharts();
@@ -4311,6 +4606,7 @@
         recalculate();
         applyChartAccessibility(); // Dashed lines + distinct markers for colorblind accessibility
         initInvestmentCalculator();
+        initWizard(); // Initialize wizard
     </script>
 </body>
 
