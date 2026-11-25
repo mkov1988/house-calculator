@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="house calc logo.svg" alt="House Calculator Logo" width="64" height="64">
+  <img src="assets/house calc logo.svg" alt="House Calculator Logo" width="64" height="64">
 </p>
 
 <h1 align="center">House Calculator</h1>
@@ -32,13 +32,13 @@ House Calculator is a suite of two interconnected financial tools — a **Mortga
 
 > *"Should I put a massive down payment on my house, or put down less and invest the rest?"*
 
-![Mortgage vs. Invest Calculator](screenshot.png)
+![Mortgage vs. Invest Calculator](assets/screenshot.png)
 
 ### Investment Growth
 
 > *"How will my portfolio grow over time across different fund types?"*
 
-![Investment Growth Calculator](screenshot-invest.png)
+![Investment Growth Calculator](assets/screenshot-invest.png)
 
 ---
 
@@ -255,11 +255,9 @@ Net Return = Gross Historical Return − Expense Ratio
 
 ```
 house-calculator/
+├── assets/               # Images and design assets
+├── docs/                 # Documentation and specifications
 ├── index.html            # The entire application (HTML + CSS + JS)
-├── house calc logo.svg   # App logo (purple house icon)
-├── screenshot.png        # Mortgage calculator screenshot
-├── screenshot-invest.png # Investment calculator screenshot
-├── PRD.md                # Product Requirements Document
 ├── CLAUDE.md             # AI assistant context file
 └── README.md             # You are here
 ```
